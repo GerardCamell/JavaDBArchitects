@@ -1,7 +1,12 @@
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 
     public class Main {
@@ -67,12 +72,17 @@ import java.util.Scanner;
         private static void anadirExcursion() {
             System.out.print("Código: ");
             String codigo = scanner.nextLine();
+
             System.out.print("Descripción: ");
             String descripcion = scanner.nextLine();
-            System.out.print("Fecha (en formato largo como timestamp o manual): ");
-            Date fecha = new Date(); // Aquí puedes mejorar la entrada de fecha
+
+            System.out.print("Fecha de la excursión (formato: dd/MM/yyyy): ");
+            String fechaInput = scanner.nextLine();
+            Date fecha = parseFecha(fechaInput);
+
             System.out.print("Número de días: ");
             int numDias = Integer.parseInt(scanner.nextLine());
+
             System.out.print("Precio de Inscripción: ");
             float precio = Float.parseFloat(scanner.nextLine());
 
@@ -80,20 +90,49 @@ import java.util.Scanner;
             excursiones.add(excursion);
             System.out.println("Excursión añadida correctamente.");
         }
+        // Método para convertir String a Date
+        private static Date parseFecha(String fechaInput) {
+            try {
+                // Especificar el formato de la fecha
+                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                return sdf.parse(fechaInput);
+            } catch (ParseException e) {
+                System.out.println("Error al parsear la fecha. Usando la fecha actual.");
+                return new Date(); // Retorna la fecha actual en caso de error
+            }
+        }
+
+
 
         // Función para mostrar excursiones con filtro de fechas
         private static void mostrarExcursionesConFiltro() {
             // Ingresar fechas de filtro
-            System.out.print("Ingrese la fecha de inicio: ");
-            Date fechaInicio = new Date(); // Aquí puedes mejorar la entrada de fecha
-            System.out.print("Ingrese la fecha de fin: ");
-            Date fechaFin = new Date(); // Aquí puedes mejorar la entrada de fecha
+            System.out.print("Ingrese la fecha de inicio (formato: dd/MM/yyyy): ");
+            String fechaInicioInput = scanner.nextLine();
+            Date fechaInicio = parseFecha(fechaInicioInput);
 
-            System.out.println("Excursiones entre " + fechaInicio + " y " + fechaFin);
+            System.out.print("Ingrese la fecha de fin (formato: dd/MM/yyyy): ");
+            String fechaFinInput = scanner.nextLine();
+            Date fechaFin = parseFecha(fechaFinInput);
+
+            // Asegurarse de que la fecha de inicio sea anterior a la fecha de fin
+            if (fechaInicio.after(fechaFin)) {
+                System.out.println("La fecha de inicio debe ser anterior a la fecha de fin.");
+                return;
+            }
+
+            System.out.println("Excursiones entre " + fechaInicio + " y " + fechaFin + ":");
+            boolean hayExcursiones = false; // Variable para verificar si hay excursiones
+
             for (Excursion excursion : excursiones) {
-                if (excursion.getFecha().after(fechaInicio) && excursion.getFecha().before(fechaFin)) {
+                if (!excursion.getFecha().before(fechaInicio) && !excursion.getFecha().after(fechaFin)) {
                     System.out.println(excursion);
+                    hayExcursiones = true; // Se encontró al menos una excursión
                 }
+            }
+
+            if (!hayExcursiones) {
+                System.out.println("No se encontraron excursiones en el rango de fechas proporcionado.");
             }
         }
 

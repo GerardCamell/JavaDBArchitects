@@ -10,6 +10,7 @@ public class Seguro {
         this.tipo = tipo;
         this.precio = precio;
     }
+
     // Getters y Setters para tipo y precio
     public String getTipo() {
         return tipo;
@@ -26,6 +27,7 @@ public class Seguro {
     public void setPrecio(float precio) {
         this.precio = precio;
     }
+
     // Método toString para proporcionar una representación en texto de la clase
     @Override
     public String toString() {
