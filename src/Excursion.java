@@ -73,6 +73,3 @@ public class Excursion {
                 '}';
     }
 }
-//jejeje
-
-// excursiones a la montaña 
