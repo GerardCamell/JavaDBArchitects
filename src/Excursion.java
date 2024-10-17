@@ -4,6 +4,7 @@ import java.util.Date;
 public class Excursion {
 
     // Atributos que definen los datos básicos de una excursión
+
     private String codigo;
     private String descripcion;
     private Date fecha;
@@ -11,6 +12,7 @@ public class Excursion {
     private float precioInscripcion;
 
     // Constructor: Inicializa los atributos de la clase
+
     public Excursion(String codigo, String descripcion, Date fecha, int numDias, float precioInscripcion) {
         this.codigo = codigo;
         this.descripcion = descripcion;
