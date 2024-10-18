@@ -458,8 +458,20 @@ import java.util.Scanner;
                     String numInscripcion = scanner.nextLine();
 
                     // Pedir la fecha de inscripción
-                    System.out.print("Ingrese la fecha de inscripción (por ahora usaremos la fecha actual): ");
-                    Date fechaInscripcion = new Date(); // Puedes cambiar la lógica para solicitar una fecha real
+                    System.out.print("Ingrese la fecha de inscripción (dd/MM/yyyy): ");
+                    String fechaInscripcionStr = scanner.nextLine();
+                    Date fechaInscripcion = null;
+
+                    // Convertir la cadena ingresada a objeto Date
+                    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                    sdf.setLenient(false); // Para evitar fechas inválidas
+
+                    try {
+                        fechaInscripcion = sdf.parse(fechaInscripcionStr); // Intentar convertir
+                    } catch (ParseException e) {
+                        System.out.println("Error: La fecha ingresada no es válida. Se usará la fecha actual.");
+                        fechaInscripcion = new Date(); // Usar fecha actual en caso de error
+                    }
 
                     // Crear la inscripción con todos los argumentos requeridos
                     Inscripcion inscripcion = new Inscripcion(numInscripcion, socio, excursion, fechaInscripcion);
@@ -513,23 +525,27 @@ import java.util.Scanner;
             Date fechaFin = null;
 
             if (filtrarPorFechas.equalsIgnoreCase("s")) {
-                System.out.print("Ingrese la fecha de inicio: ");
-                fechaInicio = new Date(); // Aquí puedes mejorar la entrada de fechas
-                System.out.print("Ingrese la fecha de fin: ");
-                fechaFin = new Date(); // Aquí puedes mejorar la entrada de fechas
-            }
+                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                sdf.setLenient(false); // Para evitar fechas inválidas
 
-            System.out.println("Inscripciones encontradas:");
-            for (Inscripcion inscripcion : inscripciones) {
-                boolean cumpleFiltroSocio = (numeroSocio == null || inscripcion.getSocio().getNumeroSocio().equals(numeroSocio));
-                boolean cumpleFiltroFechas = (fechaInicio == null || (inscripcion.getExcursion().getFecha().after(fechaInicio)
-                        && inscripcion.getExcursion().getFecha().before(fechaFin)));
+                // Pedir la fecha de inicio
+                System.out.print("Ingrese la fecha de inicio (dd/MM/yyyy): ");
+                String fechaInicioStr = scanner.nextLine();
+                try {
+                    fechaInicio = sdf.parse(fechaInicioStr);
+                } catch (ParseException e) {
+                    System.out.println("Error: La fecha de inicio ingresada no es válida. Se usará una fecha por defecto (null).");
+                    // Si es necesario, puedes establecer una fecha por defecto aquí
+                }
 
-                if (cumpleFiltroSocio && cumpleFiltroFechas) {
-                    System.out.println("Socio: " + inscripcion.getSocio().getNombre()
-                            + " | Excursión: " + inscripcion.getExcursion().getDescripcion()
-                            + " | Fecha: " + inscripcion.getExcursion().getFecha()
-                            + " | Importe: " + calcularPrecioExcursion(inscripcion.getSocio(), inscripcion.getExcursion()));
+                // Pedir la fecha de fin
+                System.out.print("Ingrese la fecha de fin (dd/MM/yyyy): ");
+                String fechaFinStr = scanner.nextLine();
+                try {
+                    fechaFin = sdf.parse(fechaFinStr);
+                } catch (ParseException e) {
+                    System.out.println("Error: La fecha de fin ingresada no es válida. Se usará una fecha por defecto (null).");
+
                 }
             }
         }
