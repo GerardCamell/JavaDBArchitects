@@ -1,4 +1,6 @@
-// Clase Seguro: Representa el seguro que puede tener un socio (básico o completo)
+package grupofp.modelo;
+
+// Clase grupofp.modelo.Seguro: Representa el seguro que puede tener un socio (básico o completo)
 public class Seguro {
 
     // Atributos del seguro
@@ -30,7 +32,7 @@ public class Seguro {
 
     @Override
     public String toString() {
-        return "Seguro:\n" +
+        return "grupofp.modelo.Seguro:\n" +
                 "\t\tTipo: " + tipo + "\n" +
                 "\t\tPrecio: " + precio;
     }

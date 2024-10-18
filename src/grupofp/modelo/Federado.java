@@ -1,5 +1,7 @@
-// Clase Federado: Representa a un socio federado, asociado a una federación
-public class Federado extends Socio {
+package grupofp.modelo;
+
+// Clase grupofp.modelo.Federado: Representa a un socio federado, asociado a una federación
+public class Federado<Federacion> extends Socio {
     // Atributos específicos de un socio federado
     private String NIF;
     private Federacion federacion;
@@ -19,7 +21,7 @@ public class Federado extends Socio {
         return 0;
     }
 
-    // Getters y Setters para NIF y Federacion
+    // Getters y Setters para NIF y grupofp.modelo.Federacion
     public String getNIF() {
         return NIF;
     }
@@ -28,8 +30,8 @@ public class Federado extends Socio {
         this.NIF = NIF;
     }
 
-    public Federacion getFederacion() {
-        return federacion;
+    public <Federacion> Federacion getFederacion() {
+        return (Federacion) federacion;
     }
 
     public void setFederacion(Federacion federacion) {
@@ -38,8 +40,8 @@ public class Federado extends Socio {
 
     @Override
     public String toString() {
-        return "Socio Federado:\n" +
-                "\tNúmero de Socio: " + getNumeroSocio() + "\n" +
+        return "grupofp.modelo.Socio grupofp.modelo.Federado:\n" +
+                "\tNúmero de grupofp.modelo.Socio: " + getNumeroSocio() + "\n" +
                 "\tNombre: " + getNombre() + "\n" +
                 "\tNIF: " + NIF + "\n" +
                 "\tFederación: " + federacion + "\n";

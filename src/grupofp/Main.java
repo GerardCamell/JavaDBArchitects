@@ -1,3 +1,6 @@
+package grupofp;
+
+import grupofp.modelo.*;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -168,11 +171,11 @@ import java.util.Scanner;
         // Gestión de Socios
         private static void gestionSocios() {
             System.out.println("Gestión de Socios:");
-            System.out.println("1. Añadir Socio Estándar");
-            System.out.println("2. Modificar Tipo de Seguro de un Socio Estándar");
-            System.out.println("3. Añadir Socio Federado");
-            System.out.println("4. Añadir Socio Infantil");
-            System.out.println("5. Eliminar Socio");
+            System.out.println("1. Añadir grupofp.modelo.Socio Estándar");
+            System.out.println("2. Modificar Tipo de grupofp.modelo.Seguro de un grupofp.modelo.Socio Estándar");
+            System.out.println("3. Añadir grupofp.modelo.Socio grupofp.modelo.Federado");
+            System.out.println("4. Añadir grupofp.modelo.Socio grupofp.modelo.Infantil");
+            System.out.println("5. Eliminar grupofp.modelo.Socio");
             System.out.println("6. Mostrar Socios (Todos o por Tipo)");
             System.out.println("7. Mostrar Factura Mensual por Socios");
             System.out.print("Seleccione una opción: ");
@@ -222,7 +225,7 @@ import java.util.Scanner;
             Seguro seguro = new Seguro(tipoSeguro, precioSeguro);
             Estandar estandar = new Estandar(numeroSocio, nombre, NIF, seguro);
             socios.add(estandar);
-            System.out.println("Socio estándar añadido correctamente.");
+            System.out.println("grupofp.modelo.Socio estándar añadido correctamente.");
         }
 
         private static void modificarSeguroSocioEstandar() {
@@ -238,7 +241,7 @@ import java.util.Scanner;
 
                 Seguro nuevoSeguro = new Seguro(tipoSeguro, precioSeguro);
                 ((Estandar) socio).setSeguro(nuevoSeguro);
-                System.out.println("Seguro actualizado correctamente.");
+                System.out.println("grupofp.modelo.Seguro actualizado correctamente.");
             } else {
                 System.out.println("El socio no es de tipo estándar.");
             }
@@ -261,7 +264,7 @@ import java.util.Scanner;
             Federado socioFederado = new Federado(numeroSocio, nombre, nif, federacion);
             socios.add(socioFederado);
 
-            System.out.println("Socio Federado añadido correctamente.");
+            System.out.println("grupofp.modelo.Socio grupofp.modelo.Federado añadido correctamente.");
         }
         // Función para añadir un socio infantil
         private static void anadirSocioInfantil() {
@@ -276,7 +279,7 @@ import java.util.Scanner;
             Infantil socioInfantil = new Infantil(numeroSocio, nombre, numSocioPadreOMadre);
             socios.add(socioInfantil);
 
-            System.out.println("Socio Infantil añadido correctamente.");
+            System.out.println("grupofp.modelo.Socio grupofp.modelo.Infantil añadido correctamente.");
         }
         // Función para eliminar un socio
         private static void eliminarSocio() {
@@ -305,7 +308,7 @@ import java.util.Scanner;
 
                 if (socioAEliminar != null) {
                     socios.remove(socioAEliminar);
-                    System.out.println("Socio eliminado correctamente.");
+                    System.out.println("grupofp.modelo.Socio eliminado correctamente.");
                 } else {
                     System.out.println("No se encontró un socio con ese número.");
                 }
@@ -374,7 +377,7 @@ import java.util.Scanner;
                     return socio;
                 }
             }
-            System.out.println("Socio no encontrado.");
+            System.out.println("grupofp.modelo.Socio no encontrado.");
             return null;
         }
 
@@ -563,9 +566,9 @@ import java.util.Scanner;
         private static Socio anadirNuevoSocio() {
             System.out.println("Añadir nuevo socio:");
             System.out.println("Seleccione el tipo de socio: ");
-            System.out.println("1. Socio Estándar");
-            System.out.println("2. Socio Federado");
-            System.out.println("3. Socio Infantil");
+            System.out.println("1. grupofp.modelo.Socio Estándar");
+            System.out.println("2. grupofp.modelo.Socio grupofp.modelo.Federado");
+            System.out.println("3. grupofp.modelo.Socio grupofp.modelo.Infantil");
 
             int tipoSocio = Integer.parseInt(scanner.nextLine());
             switch (tipoSocio) {

@@ -1,7 +1,11 @@
+package grupofp;
+
+import grupofp.modelo.Inscripcion;
+
 import java.util.HashSet;
 import java.util.Set;
 
-// Clase GestorInscripciones
+// Clase grupofp.GestorInscripciones
 public class GestorInscripciones {
 
     // Conjunto para almacenar inscripciones únicas

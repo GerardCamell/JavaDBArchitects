@@ -1,3 +1,4 @@
+package grupofp.modelo;
 
 import java.util.Date;
 
@@ -67,7 +68,7 @@ public class Excursion {
     // Método toString: Nos proporciona una representación en texto de la clase
     @Override
     public String toString() {
-        return "Excursion{" +
+        return "grupofp.modelo.Excursion{" +
                 "codigo='" + codigo + '\'' +
                 ", descripcion='" + descripcion + '\'' +
                 ", fecha=" + fecha +

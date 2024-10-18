@@ -1,4 +1,6 @@
-// Clase Infantil: Representa a un socio infantil, que tiene un número de socio del padre o madre
+package grupofp.modelo;
+
+// Clase grupofp.modelo.Infantil: Representa a un socio infantil, que tiene un número de socio del padre o madre
 public class Infantil extends Socio {
 
     // Atributo específico del socio infantil
@@ -26,10 +28,10 @@ public class Infantil extends Socio {
 
     @Override
     public String toString() {
-        return "Socio Infantil:\n" +
-                "\tNúmero de Socio: " + getNumeroSocio() + "\n" +
+        return "grupofp.modelo.Socio grupofp.modelo.Infantil:\n" +
+                "\tNúmero de grupofp.modelo.Socio: " + getNumeroSocio() + "\n" +
                 "\tNombre: " + getNombre() + "\n" +
-                "\tNúmero de Socio del Padre/Madre: " + numSocioPadreOMadre + "\n";
+                "\tNúmero de grupofp.modelo.Socio del Padre/Madre: " + numSocioPadreOMadre + "\n";
     }
 }
 

@@ -1,4 +1,6 @@
-// Clase abstracta Socio: Representa a un socio del centro
+package grupofp.modelo;
+
+// Clase abstracta grupofp.modelo.Socio: Representa a un socio del centro
 public abstract class Socio {
 
     // Atributos comunes para todos los tipos de socios
@@ -34,7 +36,7 @@ public abstract class Socio {
     // Método toString: Proporciona una representación en texto de la clase
     @Override
     public String toString() {
-        return "Socio{" +
+        return "grupofp.modelo.Socio{" +
                 "numeroSocio='" + numeroSocio + '\'' +
                 ", nombre='" + nombre + '\'' +
                 '}';

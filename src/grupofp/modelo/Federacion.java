@@ -1,4 +1,4 @@
-// Clase Federacion: Representa una federación a la que un socio federado puede estar asociado
+package grupofp.modelo;// Clase grupofp.modelo.Federacion: Representa una federación a la que un socio federado puede estar asociado
 
 public class Federacion {
     // Atributos de la federación
@@ -30,7 +30,7 @@ public class Federacion {
     // Método toString para proporcionar una representación en texto de la clase
     @Override
     public String toString() {
-        return "Federacion{" +
+        return "grupofp.modelo.Federacion{" +
                 "federacion='" + codigo + '\'' +
                 ", nombre='" + nombre + '\'' +
                 '}';

@@ -1,4 +1,6 @@
-// Clase Estandar: Representa a un socio estándar con un seguro
+package grupofp.modelo;
+
+// Clase grupofp.modelo.Estandar: Representa a un socio estándar con un seguro
 public class Estandar extends Socio {
 
     // Atributos específicos de un socio estándar
@@ -19,7 +21,7 @@ public class Estandar extends Socio {
         return 0;
     }
 
-    // Getters y Setters para NIF y Seguro
+    // Getters y Setters para NIF y grupofp.modelo.Seguro
     public String getNIF() {
         return NIF;
     }
@@ -38,10 +40,10 @@ public class Estandar extends Socio {
 
     @Override
     public String toString() {
-        return "Socio Estándar:\n" +
-                "\tNúmero de Socio: " + getNumeroSocio() + "\n" +
+        return "grupofp.modelo.Socio Estándar:\n" +
+                "\tNúmero de grupofp.modelo.Socio: " + getNumeroSocio() + "\n" +
                 "\tNombre: " + getNombre() + "\n" +
                 "\tNIF: " + NIF + "\n" +
-                "\tSeguro: " + seguro.toString() + "\n";
+                "\tgrupofp.modelo.Seguro: " + seguro.toString() + "\n";
     }
 }

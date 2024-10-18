@@ -1,6 +1,8 @@
+package grupofp.modelo;
+
 import java.util.Date;
 
-// Clase Inscripcion: Representa una inscripción de un socio a una excursión
+// Clase grupofp.modelo.Inscripcion: Representa una inscripción de un socio a una excursión
 public class Inscripcion {
 
     // Atributos de la inscripción
@@ -59,7 +61,7 @@ public class Inscripcion {
     // Método toString
     @Override
     public String toString() {
-        return "Inscripcion{" +
+        return "grupofp.modelo.Inscripcion{" +
                 "numInscripcion='" + numInscripcion + '\'' +
                 ", socio=" + socio +
                 ", excursion=" + excursion +
