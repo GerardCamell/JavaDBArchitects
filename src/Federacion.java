@@ -1,21 +1,22 @@
 // Clase Federacion: Representa una federación a la que un socio federado puede estar asociado
+
 public class Federacion {
     // Atributos de la federación
-    private String federacion;
+    private String codigo;
     private String nombre;
 
     // Constructor: Inicializa los atributos de la federación
     public Federacion(String federacion, String nombre) {
-        this.federacion = federacion;
+        this.codigo = codigo;
         this.nombre = nombre;
     }
     // Getters y Setters para federacion y nombre
     public String getFederacion() {
-        return federacion;
+        return codigo;
     }
 
     public void setFederacion(String federacion) {
-        this.federacion = federacion;
+        this.codigo = federacion;
     }
 
     public String getNombre() {
@@ -30,7 +31,7 @@ public class Federacion {
     @Override
     public String toString() {
         return "Federacion{" +
-                "federacion='" + federacion + '\'' +
+                "federacion='" + codigo + '\'' +
                 ", nombre='" + nombre + '\'' +
                 '}';
     }

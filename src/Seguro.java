@@ -28,12 +28,10 @@ public class Seguro {
         this.precio = precio;
     }
 
-    // Método toString para proporcionar una representación en texto de la clase
     @Override
     public String toString() {
-        return "Seguro{" +
-                "tipo='" + tipo + '\'' +
-                ", precio=" + precio +
-                '}';
+        return "Seguro:\n" +
+                "\t\tTipo: " + tipo + "\n" +
+                "\t\tPrecio: " + precio;
     }
 }

@@ -23,11 +23,13 @@ public class Infantil extends Socio {
     public void setNumSocioPadreOMadre(String numSocioPadreOMadre) {
         this.numSocioPadreOMadre = numSocioPadreOMadre;
     }
-    // Método toString para proporcionar una representación en texto de la clase
+
     @Override
     public String toString() {
-        return "Infantil{" +
-                "numSocioPadreOMadre='" + numSocioPadreOMadre + '\'' +
-                '}';
+        return "Socio Infantil:\n" +
+                "\tNúmero de Socio: " + getNumeroSocio() + "\n" +
+                "\tNombre: " + getNombre() + "\n" +
+                "\tNúmero de Socio del Padre/Madre: " + numSocioPadreOMadre + "\n";
     }
 }
+

@@ -1,4 +1,4 @@
-import java.time.LocalDate;
+
 import java.util.Date;
 
 // Clase que representa una excursión organizada por el centro

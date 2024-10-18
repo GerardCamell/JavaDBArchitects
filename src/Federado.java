@@ -36,12 +36,12 @@ public class Federado extends Socio {
         this.federacion = federacion;
     }
 
-    // Método toString para proporcionar una representación en texto de la clase
     @Override
     public String toString() {
-        return "Federado{" +
-                "NIF='" + NIF + '\'' +
-                ", federacion=" + federacion +
-                '}';
+        return "Socio Federado:\n" +
+                "\tNúmero de Socio: " + getNumeroSocio() + "\n" +
+                "\tNombre: " + getNombre() + "\n" +
+                "\tNIF: " + NIF + "\n" +
+                "\tFederación: " + federacion + "\n";
     }
 }

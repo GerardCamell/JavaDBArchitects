@@ -36,12 +36,12 @@ public class Estandar extends Socio {
         this.seguro = seguro;
     }
 
-    // Método toString para proporcionar una representación en texto de la clase
     @Override
     public String toString() {
-        return "Estandar{" +
-                "NIF='" + NIF + '\'' +
-                ", seguro=" + seguro +
-                '}';
+        return "Socio Estándar:\n" +
+                "\tNúmero de Socio: " + getNumeroSocio() + "\n" +
+                "\tNombre: " + getNombre() + "\n" +
+                "\tNIF: " + NIF + "\n" +
+                "\tSeguro: " + seguro.toString() + "\n";
     }
 }

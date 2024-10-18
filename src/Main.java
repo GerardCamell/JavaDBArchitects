@@ -4,9 +4,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 
     public class Main {
@@ -15,7 +12,39 @@ import java.util.Scanner;
         private static List<Inscripcion> inscripciones = new ArrayList<>();
         private static Scanner scanner = new Scanner(System.in);
 
+        private static void añadirSociosPredefinidos() {
+
+        // Crear federaciones
+        Federacion federacion1 = new Federacion("NACIONAL01", "Federación Nacional");
+        Federacion federacion2 = new Federacion("INTERNACIONAL01", "Federación Internacional");
+
+        // Creamos los seguros
+
+        Seguro seguroBasico = new Seguro("Básico", 50.0f);
+        Seguro seguroCompleto = new Seguro("Completo", 100.0f);
+
+        //Creamos los socios
+
+        Estandar socioEstandar1 = new Estandar("1", "Gerard", "40000000c", seguroBasico);
+        Estandar socioEstandar2 = new Estandar("2","Candela","5000000d", seguroCompleto);
+
+        Federado socioFederado1 = new Federado("3","Daniel", "7000000x",federacion1);
+        Federado socioFederado2 = new Federado("4","Bernat", "8000000x",federacion2);
+
+        Infantil socioInfantil1 = new Infantil("5", "Carlos", "1");
+        Infantil socioInfantil2 = new Infantil("6", "María", "2");
+
+            socios.add(socioEstandar1);
+            socios.add(socioEstandar2);
+            socios.add(socioFederado1);
+            socios.add(socioFederado2);
+            socios.add(socioInfantil1);
+            socios.add(socioInfantil2);
+        }
+
         public static void main(String[] args) {
+            añadirSociosPredefinidos();
+
             while (true) {
                 mostrarMenuPrincipal();
                 int opcion = Integer.parseInt(scanner.nextLine());
@@ -290,9 +319,17 @@ import java.util.Scanner;
             System.out.println("3. Socios Federados");
             System.out.println("4. Socios Infantiles");
 
-            int opcion = Integer.parseInt(scanner.nextLine());
+            int opcion;
+            try {
+                opcion = Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Por favor, ingrese una opción válida.");
+                return;
+            }
 
             System.out.println("Lista de socios:");
+            boolean haySocios = false; // Para verificar si se mostraron socios
+
             for (Socio socio : socios) {
                 boolean mostrar = false;
 
@@ -321,8 +358,13 @@ import java.util.Scanner;
                 }
 
                 if (mostrar) {
-                    System.out.println(socio.toString());
+                    System.out.println(socio.toString()); // Polimorfismo: llama al toString de la subclase correcta
+                    haySocios = true;
                 }
+            }
+
+            if (!haySocios) {
+                System.out.println("No se encontraron socios para la opción seleccionada.");
             }
         }
 
@@ -527,6 +569,4 @@ import java.util.Scanner;
             // Devuelve el socio recién añadido
             return socios.get(socios.size() - 1); // Último socio añadido
         }
-
-
     }
