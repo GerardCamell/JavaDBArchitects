@@ -84,10 +84,10 @@ public class Excursion {
     // Método toString modificado para mostrar la fecha formateada
     @Override
     public String toString() {
-        return "Codigo:" + codigo + "\n" +
-                "Descripcion:" + descripcion + "'\n" +
-                "Fecha:" + getFechaAsLocalDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + "'\n" +
-                "Numero de dias:" + numDias + "'\n" +
-                "Precio inscripción:" + precioInscripcion;
+        return "Código: " + codigo + "\n" +
+                "Descripción: " + descripcion + "\n" +
+                "Fecha: " + getFechaAsLocalDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + "\n" +
+                "Número de días: " + numDias + "\n" +
+                "Precio inscripción: " + precioInscripcion;
     }
 }

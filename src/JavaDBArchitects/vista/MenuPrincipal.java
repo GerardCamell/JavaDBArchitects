@@ -1,20 +1,49 @@
 package JavaDBArchitects.vista;
 
 import JavaDBArchitects.controlador.Controlador;
-import JavaDBArchitects.modelo.Seguro;
-import JavaDBArchitects.modelo.Federacion;
+import JavaDBArchitects.modelo.*;
+
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import java.time.format.DateTimeFormatter;
 
 public class MenuPrincipal {
+
+    private static void añadirSociosPredefinidos() {
+        Federacion federacion1 = new Federacion("NACIONAL01", "Federación Nacional");
+        Federacion federacion2 = new Federacion("INTERNACIONAL01", "Federación Internacional");
+
+        Seguro seguroBasico = new Seguro("Básico", 50.0f);
+        Seguro seguroCompleto = new Seguro("Completo", 100.0f);
+
+        // Crear los socios predefinidos
+        Estandar socioEstandar1 = new Estandar("1", "Gerard", "40000000c", seguroCompleto);
+        Estandar socioEstandar2 = new Estandar("2", "Candela", "5000000d", seguroCompleto);
+
+        Federado socioFederado1 = new Federado("3", "Daniel", "7000000x", federacion1);
+        Federado socioFederado2 = new Federado("4", "Bernat", "8000000x", federacion2);
+
+        Infantil socioInfantil1 = new Infantil("5", "Carlos", "1");
+        Infantil socioInfantil2 = new Infantil("6", "María", "2");
+
+        // Agregar los socios a la lista de socios
+        ListaSocios.addSocio(socioEstandar1);
+        ListaSocios.addSocio(socioEstandar2);
+        ListaSocios.addSocio(socioFederado1);
+        ListaSocios.addSocio(socioFederado2);
+        ListaSocios.addSocio(socioInfantil1);
+        ListaSocios.addSocio(socioInfantil2);
+    }
+
 
     private static final Scanner scanner = new Scanner(System.in);
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     public static void mostrarMenu() {
         int opcion = -1;
-
+        añadirSociosPredefinidos();
         while (opcion != 0) {
             System.out.println("=== Menú Principal ===");
             System.out.println("1. Añadir Excursión");
