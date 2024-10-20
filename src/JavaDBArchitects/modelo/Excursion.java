@@ -97,6 +97,5 @@ public class Excursion {
                 "Número de días: " + numDias + "\n" +
                 "Precio inscripción: " + newPrecio + " " + "€";
 
-
     }
 }
