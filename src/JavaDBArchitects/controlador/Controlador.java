@@ -47,21 +47,19 @@ public class Controlador {
     }
 
     // Método para registrar una excursión
-    public static void registrarExcursion(String codigo, String descripcion, LocalDate fecha, int numeroDias, float precio) {
-        try {
-            List<Object> parametros = new ArrayList<>();
-            parametros.add(codigo);
-            parametros.add(descripcion);
-            parametros.add(java.sql.Date.valueOf(fecha)); // Convertir LocalDate a Date
-            parametros.add(numeroDias);
-            parametros.add(precio);
+    public static void registrarExcursion(String codigo, String descripcion, LocalDate fecha, int numeroDias, float precio) throws ExcursionYaExisteException {
+        List<Object> parametros = new ArrayList<>();
+        parametros.add(codigo);
+        parametros.add(descripcion);
+        parametros.add(java.sql.Date.valueOf(fecha)); // Convertir LocalDate a Date
+        parametros.add(numeroDias);
+        parametros.add(precio);
 
-            Datos.registrarExcursion(parametros);
-            MenuPrincipal.mostrarMensaje("Excursión registrada con éxito.");
-        } catch (ExcursionYaExisteException e) {
-            MenuPrincipal.mostrarError("Error: La excursión ya existe.");
-        }
+        // Llamada al método en Datos que puede lanzar la excepción
+        Datos.registrarExcursion(parametros);
+        MenuPrincipal.mostrarMensaje("Excursión registrada con éxito.");
     }
+
 
     // Método para eliminar una excursión
     public static boolean eliminarExcursion(String codigoExcursion) {
@@ -162,14 +160,61 @@ public class Controlador {
         }
     }
 
-    // Método para consultar la factura mensual (simulado)
+    // Método para consultar la factura mensual
     public static void consultarFacturaMensual(String numeroSocio) {
-        try {
-            MenuPrincipal.mostrarMensaje("Factura mensual para el socio " + numeroSocio + ": 100€");
-        } catch (Exception e) {
-            MenuPrincipal.mostrarError("Error al consultar la factura mensual.");
+        // Obtener el socio del sistema
+        Socio socio = ListaSocios.getSocio(numeroSocio);
+
+        // Verificar si el socio existe
+        if (socio == null) {
+            MenuPrincipal.mostrarError("Error: El socio no existe.");
+            return;
         }
+
+        // Definir cuota base mensual
+        float cuotaBase = 100.0f; // Ejemplo: cuota base es 100€
+
+        // Calcular la cuota mensual con descuentos
+        float cuotaMensual;
+        if (socio instanceof Estandar) {
+            cuotaMensual = cuotaBase; // Sin descuento para estándar
+        } else if (socio instanceof Infantil) {
+            cuotaMensual = cuotaBase * 0.5f; // 50% de descuento
+        } else if (socio instanceof Federado) {
+            cuotaMensual = cuotaBase * 0.95f; // 5% de descuento
+        } else {
+            cuotaMensual = 0; // Caso no válido
+        }
+
+        // Inicializar el total de la factura
+        float totalFactura = cuotaMensual;
+
+        // Obtener las inscripciones del socio
+        List<Inscripcion> inscripciones = ListaInscripciones.getInscripciones();
+
+        // Calcular el costo total de las excursiones
+        for (Inscripcion inscripcion : inscripciones) {
+            if (inscripcion.getSocio().getNumeroSocio().equals(numeroSocio)) {
+                float precioExcursion = inscripcion.getExcursion().getPrecioInscripcion(); // Obtener precio de la excursión
+
+                // Calcular el precio según el tipo de socio
+                if (socio instanceof Estandar) {
+                    // Solo los socios estándar tienen seguro
+                    float seguroPrecio = ((Estandar) socio).getSeguro().getPrecio(); // Acastar a Estandar para acceder al seguro
+                    totalFactura += precioExcursion + seguroPrecio; // Precio de la excursión + seguro
+                } else if (socio instanceof Federado) {
+                    totalFactura += precioExcursion * 0.9f; // Aplicar 10% de descuento
+                } else if (socio instanceof Infantil) {
+                    totalFactura += precioExcursion; // Precio completo
+                }
+            }
+        }
+
+        // Mostrar el total calculado
+        MenuPrincipal.mostrarMensaje("Factura mensual para el socio " + numeroSocio + ": " + totalFactura + "€");
     }
+
+
 
     // Método para modificar datos del socio (simulado)
     public static void modificarDatosSocio(String numeroSocio, String nuevoNombre) {

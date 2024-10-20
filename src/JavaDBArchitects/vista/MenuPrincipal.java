@@ -262,7 +262,7 @@ public class MenuPrincipal {
         String precioStr = scanner.nextLine().replace(',', '.'); // Para que no de error cuando ingresamos "."
 
         try {
-            float precio = Float.parseFloat(precioStr); // Convertir a float otra vez
+            float precio = Float.parseFloat(precioStr); // Convertir a float
             // Llamada al controlador para registrar la excursión
             Controlador.registrarExcursion(codigo, descripcion, fecha, numeroDias, precio);
         } catch (NumberFormatException e) {
@@ -271,6 +271,7 @@ public class MenuPrincipal {
             System.out.println("Error: La excursión ya existe.");
         }
     }
+
 
     /**
      * Método para listar excursiones en un rango de fechas.
