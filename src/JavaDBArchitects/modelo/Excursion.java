@@ -95,7 +95,7 @@ public class Excursion {
                 "Descripción: " + descripcion + "\n" +
                 "Fecha: " + getFechaAsLocalDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + "\n" +
                 "Número de días: " + numDias + "\n" +
-                "Precio inscripción: " + newPrecio;
+                "Precio inscripción: " + newPrecio + " " + "€";
 
 
     }
