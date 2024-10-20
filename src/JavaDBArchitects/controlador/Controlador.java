@@ -186,9 +186,10 @@ public class Controlador {
             for (Excursion excursion : excursiones) {
                 // Usa el metodo getFechaAsLocalDate() para obtener la fecha correctamente
                 LocalDate fechaExcursion = excursion.getFechaAsLocalDate();
+                LocalDate fechaFinExcursion = excursion.calcularFechaFin();
 
-                if (excursion.getNumDias() > 1) { // Si la excursion tiene más de un día
-                    MenuPrincipal.mostrarMensaje("Excursión: " + excursion + "\n" + "Fecha Fin de Excursión: " + fechaFin.format(FORMATO_FECHA));
+               if (excursion.getNumDias() > 1) { // Si la excursion tiene más de un día
+                    MenuPrincipal.mostrarMensaje("Excursión: " + excursion + "\n" + "Fecha Fin de Excursión: " + fechaFinExcursion.format(FORMATO_FECHA));// Revisa el final de la excursión
                     //MenuPrincipal.mostrarMensaje("MAS DE UN DIA."); test de más de un dia
                 } else {// Si la excursión dura SÓLO un día
                     MenuPrincipal.mostrarMensaje("Excursión: " + excursion);// + "- Fecha: " + fechaExcursion.format(FORMATO_FECHA));
