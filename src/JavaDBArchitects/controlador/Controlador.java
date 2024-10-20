@@ -163,9 +163,9 @@ public class Controlador {
 
                 // Mostrar la inscripción formateando la fecha
                 if(nDias > 1) {
-                    MenuPrincipal.mostrarMensaje("Inscripción: " + inscripcion + "\n"+"\n-- Las Fechas de la Excursión --\n" + "Fecha de INICIO de la Excursión: " + fechaExcursion.format(FORMATO_FECHA)+ "\n" + "Fecha FINAL de la Excursión: "+ fechaFinExcursion.format(FORMATO_FECHA)+"\n");
+                    MenuPrincipal.mostrarMensaje( inscripcion + "\n"+"\n-- Las Fechas de la Excursión --\n" + "Fecha de INICIO de la Excursión: " + fechaExcursion.format(FORMATO_FECHA)+ "\n" + "Fecha FINAL de la Excursión: "+ fechaFinExcursion.format(FORMATO_FECHA)+"\n");
                 }else{
-                    MenuPrincipal.mostrarMensaje("Inscripción: " + inscripcion + "\n");//+ " - Fecha: " + fechaExcursion.format(FORMATO_FECHA));
+                    MenuPrincipal.mostrarMensaje(inscripcion + "\n");//+ " - Fecha: " + fechaExcursion.format(FORMATO_FECHA));
                 }
             }
         }
