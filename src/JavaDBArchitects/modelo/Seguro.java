@@ -33,7 +33,13 @@ public class Seguro {
     // Método toString para proporcionar una representación en texto de la clase
     @Override
     public String toString() {
-        return String.format("Tipo: '%s'\nPrecio: %.2f € ", tipo, precio);
+        String newPrecio;
+        if(precio % 1 == 0){
+            newPrecio = String.format("%d",(int)precio); // Si es entero
+        }else{
+            newPrecio = String.format("%.2f",precio); // Si es float
+        }
+        return "Tipo: "+ tipo +'\n'+ "Precio: "+ newPrecio + " €";
     }
 }
 
