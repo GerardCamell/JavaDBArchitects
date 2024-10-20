@@ -192,7 +192,7 @@ public class Controlador {
         // Obtener las inscripciones del socio
         List<Inscripcion> inscripciones = ListaInscripciones.getInscripciones();
 
-        // Calcular el costo total de las excursiones
+        // Calcular el coste total de las excursiones
         for (Inscripcion inscripcion : inscripciones) {
             if (inscripcion.getSocio().getNumeroSocio().equals(numeroSocio)) {
                 float precioExcursion = inscripcion.getExcursion().getPrecioInscripcion(); // Obtener precio de la excursión
