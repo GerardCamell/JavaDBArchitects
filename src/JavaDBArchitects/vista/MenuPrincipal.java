@@ -57,6 +57,7 @@ public class MenuPrincipal {
             System.out.println("9. Eliminar Inscripción");
             System.out.println("10. Eliminar Socio");
             System.out.println("11. Mostrar Inscripciones con Filtros");
+            System.out.println("12. Eliminar Excursión");
             System.out.println("0. Salir");
             System.out.print("Selecciona una opción: ");
 
@@ -97,6 +98,10 @@ public class MenuPrincipal {
                 case 11:
                     mostrarInscripcionesConFiltros();
                     break;
+                case 12:
+                    eliminarExcursion();
+                    break;
+
                 case 0:
                     System.out.println("Saliendo del sistema...");
                     break;

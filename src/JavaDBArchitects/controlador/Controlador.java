@@ -66,9 +66,8 @@ public class Controlador {
     // Método para eliminar una excursión
     public static boolean eliminarExcursion(String codigoExcursion) {
         try {
-            boolean resultado = Datos.eliminarExcursion(codigoExcursion);
-            MenuPrincipal.mostrarMensaje("Excursión eliminada con éxito.");
-            return resultado;  // Devolver true si se elimina correctamente
+            // Solo retorna el resultado, sin mostrar el mensaje aquí
+            return Datos.eliminarExcursion(codigoExcursion);
         } catch (ExcursionNoExisteException e) {
             MenuPrincipal.mostrarError("Error: La excursión no existe.");
             return false;  // Devolver false si la excursión no existe
