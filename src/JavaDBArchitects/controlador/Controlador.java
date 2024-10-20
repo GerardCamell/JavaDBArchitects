@@ -172,7 +172,7 @@ public class Controlador {
         }
 
         // Definir cuota base mensual
-        float cuotaBase = 100.0f; // Ejemplo: cuota base es 100€
+        float cuotaBase = 10; // Ejemplo: cuota base es 10€
 
         // Calcular la cuota mensual con descuentos
         float cuotaMensual;
@@ -199,13 +199,15 @@ public class Controlador {
 
                 // Calcular el precio según el tipo de socio
                 if (socio instanceof Estandar) {
-                    // Solo los socios estándar tienen seguro
-                    float seguroPrecio = ((Estandar) socio).getSeguro().getPrecio(); // Acastar a Estandar para acceder al seguro
-                    totalFactura += precioExcursion + seguroPrecio; // Precio de la excursión + seguro
+                    // Precio de la excursión y el seguro (entendemos que el seguro es por excursión, en caso que no sea así se modificaría)
+                    float seguroPrecio = ((Estandar) socio).getSeguro().getPrecio(); // Acceder al seguro
+                    totalFactura += precioExcursion + seguroPrecio;
                 } else if (socio instanceof Federado) {
-                    totalFactura += precioExcursion * 0.9f; // Aplicar 10% de descuento
+                    // 10% de descuento en el precio de la excursión
+                    totalFactura += precioExcursion * 0.9f;
                 } else if (socio instanceof Infantil) {
-                    totalFactura += precioExcursion; // Precio completo
+                    // Precio completo de la excursión sin cargos adicionales
+                    totalFactura += precioExcursion;
                 }
             }
         }
