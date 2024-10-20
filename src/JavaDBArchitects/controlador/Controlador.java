@@ -64,16 +64,20 @@ public class Controlador {
     }
 
     // Método para eliminar una excursión
-    public static void eliminarExcursion(String codigoExcursion) {
+    public static boolean eliminarExcursion(String codigoExcursion) {
         try {
-            Datos.eliminarExcursion(codigoExcursion);
+            boolean resultado = Datos.eliminarExcursion(codigoExcursion);
             MenuPrincipal.mostrarMensaje("Excursión eliminada con éxito.");
+            return resultado;  // Devolver true si se elimina correctamente
         } catch (ExcursionNoExisteException e) {
             MenuPrincipal.mostrarError("Error: La excursión no existe.");
+            return false;  // Devolver false si la excursión no existe
         } catch (EliminarExcursionConInscripcionesException e) {
             MenuPrincipal.mostrarError("Error: La excursión tiene inscripciones activas y no puede ser eliminada.");
+            return false;  // Devolver false si no se puede eliminar por inscripciones activas
         }
     }
+
 
     public static void inscribirEnExcursion(String numeroSocio, String codigoExcursion, LocalDate fechaInscripcion) {
         try {

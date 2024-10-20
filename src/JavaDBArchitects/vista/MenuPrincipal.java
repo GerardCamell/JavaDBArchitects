@@ -276,6 +276,19 @@ public class MenuPrincipal {
         // Llamar al controlador con los filtros proporcionados por el usuario
         Controlador.mostrarInscripcionesConFiltros(numeroSocio, fechaInicio, fechaFin);
     }
+    private static void eliminarExcursion() {
+        System.out.println("=== Eliminar Excursión ===");
+        System.out.print("Código de la Excursión: ");
+        String codigoExcursion = scanner.nextLine();
+
+        // Llamada al controlador y manejo del resultado
+        boolean resultado = Controlador.eliminarExcursion(codigoExcursion);
+        if (resultado) {
+            MenuPrincipal.mostrarMensaje("Excursión eliminada con éxito.");
+        } else {
+            MenuPrincipal.mostrarMensaje("No se pudo eliminar la excursión.");
+        }
+    }
 
     // Método para mostrar mensajes de éxito
     public static void mostrarMensaje(String mensaje) {

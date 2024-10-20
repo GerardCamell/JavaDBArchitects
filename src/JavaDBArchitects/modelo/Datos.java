@@ -3,7 +3,6 @@ package JavaDBArchitects.modelo;
 import JavaDBArchitects.controlador.excepciones.*;
 import java.util.List;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.sql.Date;
 import java.util.ArrayList;
 
@@ -136,9 +135,9 @@ public class Datos {
             throw new InscripcionYaExisteException("El socio ya está inscrito.");
         }
 
-        // Registrar la inscripción con fecha convertida a java.sql.Date
+        // Registrar la inscripción generando un número único
         Inscripcion inscripcion = new Inscripcion(
-                parametros.get(0).toString(),
+                String.valueOf(ListaInscripciones.generarNumeroInscripcion()),  // Genera un número único para la inscripción
                 socio,
                 excursion,
                 java.sql.Date.valueOf(fechaInscripcion)  // Convertimos LocalDate a java.sql.Date
@@ -148,9 +147,6 @@ public class Datos {
         ListaInscripciones.addInscripcion(inscripcion);
         return true;
     }
-
-
-
 
 
     public static boolean eliminarInscripcion(String numeroInscripcion) throws InscripcionNoExisteException {
