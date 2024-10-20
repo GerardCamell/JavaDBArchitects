@@ -2,7 +2,8 @@ package JavaDBArchitects.modelo;
 
 // Clase Federado: Representa a un socio federado, asociado a una federación
 public class Federado extends Socio {
-    // Atributos específicos de un socio federado
+
+    // Atributos específicos de un socio federado: NIF y federación asociada
     private String NIF;
     private Federacion federacion;
 
@@ -14,14 +15,14 @@ public class Federado extends Socio {
     }
 
     // Implementación del método abstracto para calcular la cuota mensual
-
     @Override
     public double calcularCuotaMensual() {
-        // Implementar lógica de cálculo
-        return 0;
+        // Implementar lógica de cálculo para un socio federado
+        return 0; // Implementar el cálculo adecuado para la cuota mensual
     }
 
-    // Getters y Setters para NIF y JavaDBArchitects.modelo.Federacion
+    // Getters y Setters: Métodos para acceder y modificar los atributos NIF y federación
+
     public String getNIF() {
         return NIF;
     }
@@ -38,7 +39,7 @@ public class Federado extends Socio {
         this.federacion = federacion;
     }
 
-    // Método toString para proporcionar una representación en texto de la clase
+    // Método toString: Proporciona una representación en texto de la clase Federado
     @Override
     public String toString() {
         return String.format("Federado \n" +
@@ -49,3 +50,4 @@ public class Federado extends Socio {
                 getNumeroSocio(), getNombre(), NIF, federacion.toString());
     }
 }
+

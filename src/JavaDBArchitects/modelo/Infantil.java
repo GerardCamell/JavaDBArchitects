@@ -1,23 +1,24 @@
 package JavaDBArchitects.modelo;
 
-// Clase infantil: Representa a un socio infantil, que tiene un número de socio del padre o madre
+// Clase Infantil: Representa a un socio infantil, asociado al número de socio de su padre o madre.
 public class Infantil extends Socio {
 
-    // Atributo específico del socio infantil
+    // Número de socio del padre o madre (tutor)
     private String numSocioPadreOMadre;
 
-    // Constructor: Inicializa los atributos de un socio infantil
+    // Constructor que inicializa los atributos del socio infantil.
     public Infantil(String numeroSocio, String nombre, String numSocioPadreOMadre) {
         super(numeroSocio, nombre);
         this.numSocioPadreOMadre = numSocioPadreOMadre;
     }
-    // Implementación del método abstracto para calcular la cuota mensual con descuento infantil
+
+    // Implementación del cálculo de la cuota mensual específica para un socio infantil. En este caso, retorna 0.
     @Override
     public double calcularCuotaMensual() {
-
-        return 0;
+        return 0;  // Se puede modificar si en el futuro se requiere calcular cuotas para socios infantiles.
     }
-    // Getters y Setters para numSocioPadreOMadre
+
+    // Métodos getter y setter para acceder y modificar el número de socio del padre o madre.
     public String getNumSocioPadreOMadre() {
         return numSocioPadreOMadre;
     }
@@ -25,16 +26,14 @@ public class Infantil extends Socio {
     public void setNumSocioPadreOMadre(String numSocioPadreOMadre) {
         this.numSocioPadreOMadre = numSocioPadreOMadre;
     }
-    // Método toString para proporcionar una representación en texto de la clase
+
+    // Método toString que devuelve una representación en texto del socio infantil.
     @Override
     public String toString() {
         return String.format("Infantil {\n" +
-                        "Número de Socio: '%s',\n" +
-                        "Nombre: '%s',\n" +
-                        "NIF del tutor: '%s'\n" +
-                        "}",
-                getNumeroSocio(),
-                getNombre(),
-                numSocioPadreOMadre);
+                "Número de Socio: '%s',\n" +
+                "Nombre: '%s',\n" +
+                "NIF del tutor: '%s'\n" +
+                "}", getNumeroSocio(), getNombre(), numSocioPadreOMadre);
     }
 }

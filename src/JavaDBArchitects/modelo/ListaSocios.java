@@ -4,44 +4,46 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ListaSocios {
+
+    // Lista que almacena todos los socios registrados
     private static List<Socio> socios = new ArrayList<>();
 
-    // Cargar datos iniciales (si es necesario)
+    // Método que carga datos iniciales de socios, si es necesario
     public static void cargarDatosSocios() {
         // Si necesitas cargar datos predeterminados, lo puedes hacer aquí
     }
 
-    // Agregar un socio a la lista
+    // Agrega un socio a la lista de socios
     public static void addSocio(Socio socio) {
         socios.add(socio);
     }
 
-    // Comprobar si un socio ya existe (por número de socio)
+    // Comprueba si un socio ya existe en la lista (por número de socio)
     public static boolean socioExiste(String numeroSocio) {
         for (Socio socio : socios) {
             if (socio.getNumeroSocio().equals(numeroSocio)) {
-                return true;
+                return true; // El socio ya existe
             }
         }
-        return false;
+        return false; // El socio no existe
     }
 
-    // Obtener todos los socios
+    // Retorna la lista completa de socios
     public static List<Socio> getSocios() {
         return socios;
     }
 
-    // Obtener un socio específico (por número de socio)
+    // Obtiene un socio específico usando su número de socio
     public static Socio getSocio(String numeroSocio) {
         for (Socio socio : socios) {
             if (socio.getNumeroSocio().equals(numeroSocio)) {
-                return socio;
+                return socio; // Devuelve el socio si lo encuentra
             }
         }
-        return null;  // O puedes lanzar una excepción personalizada
+        return null;  // Si no lo encuentra, retorna null
     }
 
-    // Método para eliminar un socio (por número de socio)
+    // Elimina un socio de la lista basado en su número de socio
     public static boolean eliminarSocio(String numeroSocio) {
         for (Socio socio : socios) {
             if (socio.getNumeroSocio().equals(numeroSocio)) {
@@ -49,23 +51,24 @@ public class ListaSocios {
                 return true;  // Eliminación exitosa
             }
         }
-        return false;  // Si no encuentra el socio, retorna false
+        return false;  // Retorna false si el socio no existe
     }
 
-    // NUEVO MÉTODO: Listar socios por tipo
+    // Lista a los socios según su tipo (Estandar, Federado o Infantil)
     public static List<Socio> listarSociosPorTipo(int tipoSocio) {
         List<Socio> sociosFiltrados = new ArrayList<>();
 
+        // Filtra los socios por su tipo
         for (Socio socio : socios) {
             if (tipoSocio == 0 && socio instanceof Estandar) {
-                sociosFiltrados.add(socio);  // Tipo 0: Estandar
+                sociosFiltrados.add(socio);  // Tipo 0: Socio Estandar
             } else if (tipoSocio == 1 && socio instanceof Federado) {
-                sociosFiltrados.add(socio);  // Tipo 1: Federado
+                sociosFiltrados.add(socio);  // Tipo 1: Socio Federado
             } else if (tipoSocio == 2 && socio instanceof Infantil) {
-                sociosFiltrados.add(socio);  // Tipo 2: Infantil
+                sociosFiltrados.add(socio);  // Tipo 2: Socio Infantil
             }
         }
 
-        return sociosFiltrados;
+        return sociosFiltrados; // Retorna la lista filtrada por tipo
     }
 }

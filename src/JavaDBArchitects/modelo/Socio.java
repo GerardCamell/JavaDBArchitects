@@ -9,8 +9,8 @@ public abstract class Socio {
 
     // Constructor: Inicializa los atributos de un socio
     public Socio(String numeroSocio, String nombre) {
-        this.numeroSocio = numeroSocio; //Composición: el socio es parte de la inscripción
-        this.nombre = nombre; //Composición: la excursión es parte de la inscripción
+        this.numeroSocio = numeroSocio;
+        this.nombre = nombre;
     }
 
     // Getters y Setters: Para acceder y modificar los atributos

@@ -1,27 +1,45 @@
 package JavaDBArchitects.modelo;
 
-// Clase JavaDBArchitects.modelo.Estandar: Representa a un socio estándar con un seguro
+/**
+ * Clase que representa a un socio estándar dentro del sistema.
+ * Los socios de tipo estándar tienen un NIF y un seguro obligatorio.
+ */
 public class Estandar extends Socio {
 
     // Atributos específicos de un socio estándar
     private String NIF;
-    private Seguro seguro;
+    private Seguro seguro; // Composición: el seguro es obligatorio para el socio estándar
 
-    // Constructor: Inicializa los atributos de un socio de tipo estándar
+    /**
+     * Constructor que inicializa los atributos de un socio estándar.
+     *
+     * @param numeroSocio Número único del socio.
+     * @param nombre Nombre del socio.
+     * @param NIF NIF del socio.
+     * @param seguro Seguro asociado al socio.
+     */
     public Estandar(String numeroSocio, String nombre, String NIF, Seguro seguro) {
         super(numeroSocio, nombre);
         this.NIF = NIF;
-        this.seguro = seguro; //Composición: El seguro es obligatorio para el socio estándar
+        this.seguro = seguro;
     }
 
-    // Implementación del método abstracto para calcular la cuota mensual
+    /**
+     * Método que calcula la cuota mensual de un socio estándar.
+     * Implementación actual no calcula la cuota.
+     *
+     * @return Cuota mensual del socio (0 en esta implementación).
+     */
     @Override
     public double calcularCuotaMensual() {
-        // Aquí se puede implementar la lógica de cálculo de la cuota para un socio estándar
+        // Implementar lógica para calcular la cuota de un socio estándar si es necesario
         return 0;
     }
 
-    // Getters y Setters para NIF y JavaDBArchitects.modelo.Seguro
+    // Getters y setters estándar para los atributos del socio.
+    // Los getters obtienen los valores de los atributos NIF y Seguro,
+    // y los setters permiten modificar dichos valores.
+
     public String getNIF() {
         return NIF;
     }
@@ -38,7 +56,11 @@ public class Estandar extends Socio {
         this.seguro = seguro;
     }
 
-    // Método toString para proporcionar una representación en texto de la clase
+    /**
+     * Método que proporciona una representación en texto del socio estándar.
+     *
+     * @return Representación en texto de los datos del socio estándar.
+     */
     @Override
     public String toString() {
         return "Estandar \n" +

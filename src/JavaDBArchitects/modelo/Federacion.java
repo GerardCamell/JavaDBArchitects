@@ -2,7 +2,8 @@ package JavaDBArchitects.modelo;
 
 // Clase Federacion: Representa una federación a la que un socio federado puede estar asociado
 public class Federacion {
-    // Atributos de la federación
+
+    // Atributos de la federación: contienen el código y el nombre de la federación
     private String federacion;
     private String nombre;
 
@@ -11,7 +12,9 @@ public class Federacion {
         this.federacion = federacion;
         this.nombre = nombre;
     }
-    // Getters y Setters para federacion y nombre
+
+    // Getters y Setters: Métodos para acceder y modificar los atributos de la federación
+
     public String getFederacion() {
         return federacion;
     }
@@ -28,9 +31,9 @@ public class Federacion {
         this.nombre = nombre;
     }
 
-    // Método toString para proporcionar una representación en texto de la clase
+    // Método toString: Proporciona una representación en texto de la clase Federacion
     @Override
     public String toString() {
-        return  "Codigo: " + federacion + '\n'+"Nombre: " +  nombre + '\n';
+        return "Codigo: " + federacion + '\n' + "Nombre: " + nombre + '\n';
     }
 }

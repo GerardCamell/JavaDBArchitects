@@ -2,17 +2,30 @@ package JavaDBArchitects.vista;
 
 import JavaDBArchitects.controlador.Controlador;
 import JavaDBArchitects.modelo.*;
-
 import java.time.LocalDate;
 import java.util.Scanner;
 import java.time.format.DateTimeFormatter;
+import JavaDBArchitects.controlador.excepciones.ExcursionYaExisteException;
 
+/**
+ * Clase que representa el menú principal de la aplicación.
+ * Proporciona métodos para gestionar las interacciones del usuario con la lógica de negocio.
+ */
 public class MenuPrincipal {
 
+    private static final Scanner scanner = new Scanner(System.in);
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+    /**
+     * Método para añadir socios predefinidos al sistema.
+     * Este método se invoca al inicio del menú principal para tener algunos datos disponibles.
+     */
     private static void añadirSociosPredefinidos() {
+        // Crear federaciones predefinidas
         Federacion federacion1 = new Federacion("NACIONAL01", "Federación Nacional");
         Federacion federacion2 = new Federacion("INTERNACIONAL01", "Federación Internacional");
 
+        // Crear seguros predefinidos
         Seguro seguroBasico = new Seguro("Básico", 50.0f);
         Seguro seguroCompleto = new Seguro("Completo", 100.0f);
 
@@ -35,14 +48,16 @@ public class MenuPrincipal {
         ListaSocios.addSocio(socioInfantil2);
     }
 
-
-    private static final Scanner scanner = new Scanner(System.in);
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
+    /**
+     * Método que muestra el menú principal y gestiona la interacción del usuario.
+     * Proporciona opciones para agregar excursiones, registrar socios, inscripciones, etc.
+     */
     public static void mostrarMenu() {
         int opcion = -1;
-        añadirSociosPredefinidos();
+        añadirSociosPredefinidos(); // Añadir socios predefinidos al inicio del menú
+
         while (opcion != 0) {
+            // Imprimir opciones del menú
             System.out.println("=== Menú Principal ===");
             System.out.println("1. Añadir Excursión");
             System.out.println("2. Registrar Socio");
@@ -59,9 +74,11 @@ public class MenuPrincipal {
             System.out.println("0. Salir");
             System.out.print("Selecciona una opción: ");
 
+            // Leer la opción seleccionada por el usuario
             opcion = scanner.nextInt();
-            scanner.nextLine();
+            scanner.nextLine(); // Capturar el salto de línea
 
+            // Procesar la opción seleccionada
             switch (opcion) {
                 case 1:
                     registrarExcursion();
@@ -99,7 +116,6 @@ public class MenuPrincipal {
                 case 12:
                     eliminarExcursion();
                     break;
-
                 case 0:
                     System.out.println("Saliendo del sistema...");
                     break;
@@ -110,8 +126,9 @@ public class MenuPrincipal {
         }
     }
 
-
-    // Método para registrar un socio
+    /**
+     * Método para registrar un socio en el sistema.
+     */
     private static void registrarSocio() {
         System.out.println("=== Registrar Socio ===");
         System.out.print("Número de Socio: ");
@@ -126,6 +143,7 @@ public class MenuPrincipal {
 
         Object extra = null;
 
+        // Proporcionar información adicional según el tipo de socio
         if (tipoSocio == 0) {  // Estandar
             System.out.print("Seguro (Básico/Completo): ");
             String tipoSeguro = scanner.nextLine();
@@ -141,10 +159,13 @@ public class MenuPrincipal {
             extra = new Federacion(codigoFederacion, nombreFederacion);
         }
 
+        // Llamada al controlador para registrar el socio
         Controlador.registrarSocio(numeroSocio, nombre, tipoSocio, NIF, extra);
     }
 
-    // Método para eliminar un socio
+    /**
+     * Método para eliminar un socio del sistema.
+     */
     private static void eliminarSocio() {
         System.out.println("=== Eliminar Socio ===");
         System.out.print("Número de Socio: ");
@@ -154,6 +175,9 @@ public class MenuPrincipal {
         Controlador.eliminarSocio(numeroSocio);
     }
 
+    /**
+     * Método para inscribir un socio en una excursión.
+     */
     private static void inscribirEnExcursion() {
         System.out.println("=== Inscribir en Excursión ===");
         System.out.print("Número de Socio: ");
@@ -165,19 +189,25 @@ public class MenuPrincipal {
 
         LocalDate fechaInscripcion = LocalDate.parse(fechaStr, formatter);
 
+        // Llamada al controlador para inscribir al socio en la excursión
         Controlador.inscribirEnExcursion(numeroSocio, codigoExcursion, fechaInscripcion);
     }
 
-    // Método para consultar la factura mensual
+    /**
+     * Método para consultar la factura mensual de un socio.
+     */
     private static void consultarFacturaMensual() {
         System.out.println("=== Consultar Factura Mensual ===");
         System.out.print("Número de Socio: ");
         String numeroSocio = scanner.nextLine();
 
-        Controlador.consultarFacturaMensual(numeroSocio);  // Llamada al controlador
+        // Llamada al controlador para consultar la factura mensual
+        Controlador.consultarFacturaMensual(numeroSocio);
     }
 
-    // Método para modificar datos del socio
+    /**
+     * Método para modificar los datos de un socio.
+     */
     private static void modificarDatosSocio() {
         System.out.println("=== Modificar Datos del Socio ===");
         System.out.print("Número de Socio: ");
@@ -185,16 +215,22 @@ public class MenuPrincipal {
         System.out.print("Nuevo nombre del socio: ");
         String nuevoNombre = scanner.nextLine();
 
-        Controlador.modificarDatosSocio(numeroSocio, nuevoNombre);  // Llamada al controlador
+        // Llamada al controlador para modificar los datos del socio
+        Controlador.modificarDatosSocio(numeroSocio, nuevoNombre);
     }
 
-    // Método para listar inscripciones
+    /**
+     * Método para listar todas las inscripciones.
+     */
     private static void listarInscripciones() {
         System.out.println("=== Listar Inscripciones ===");
-        Controlador.listarInscripciones();  // Llamada al controlador
+        // Llamada al controlador para listar inscripciones
+        Controlador.listarInscripciones();
     }
 
-    // Método para eliminar una inscripción
+    /**
+     * Método para eliminar una inscripción de un socio.
+     */
     private static void eliminarInscripcion() {
         System.out.println("=== Eliminar Inscripción ===");
         System.out.print("Número de Inscripción: ");
@@ -204,7 +240,9 @@ public class MenuPrincipal {
         Controlador.eliminarInscripcion(numeroInscripcion);
     }
 
-    // Método para registrar una excursión
+    /**
+     * Método para registrar una nueva excursión en el sistema.
+     */
     private static void registrarExcursion() {
         System.out.println("=== Registrar Excursión ===");
         System.out.print("Código: ");
@@ -225,14 +263,18 @@ public class MenuPrincipal {
 
         try {
             float precio = Float.parseFloat(precioStr); // Convertir a float otra vez
+            // Llamada al controlador para registrar la excursión
             Controlador.registrarExcursion(codigo, descripcion, fecha, numeroDias, precio);
         } catch (NumberFormatException e) {
             System.out.println("Error: El precio ingresado no es válido. Asegúrate de usar el formato correcto.");
+        } catch (ExcursionYaExisteException e) {
+            System.out.println("Error: La excursión ya existe.");
         }
     }
 
-
-    // Metodo para listar excursiones por fechas
+    /**
+     * Método para listar excursiones en un rango de fechas.
+     */
     private static void listarExcursionesPorFechas() {
         System.out.println("=== Listar Excursiones por Fechas ===");
         System.out.print("Fecha Inicio (DD/MM/YYYY): ");
@@ -244,10 +286,13 @@ public class MenuPrincipal {
         LocalDate fechaInicio = LocalDate.parse(fechaInicioStr, formatter);
         LocalDate fechaFin = LocalDate.parse(fechaFinStr, formatter);
 
+        // Llamada al controlador para mostrar excursiones entre las fechas
         Controlador.mostrarExcursionesEntreFechas(fechaInicio, fechaFin);
     }
 
-    // Método para mostrar socios por tipo
+    /**
+     * Método para mostrar socios filtrados por tipo.
+     */
     private static void mostrarSociosPorTipo() {
         System.out.println("=== Mostrar Socios por Tipo ===");
         System.out.print("Tipo de Socio (0: Estandar, 1: Federado, 2: Infantil): ");
@@ -258,7 +303,9 @@ public class MenuPrincipal {
         Controlador.listarSocios(tipoSocio);
     }
 
-    // Método para mostrar inscripciones con filtros
+    /**
+     * Método para mostrar inscripciones con filtros aplicados.
+     */
     private static void mostrarInscripcionesConFiltros() {
         System.out.println("=== Mostrar Inscripciones con Filtros ===");
 
@@ -285,6 +332,10 @@ public class MenuPrincipal {
         // Llamar al controlador con los filtros proporcionados por el usuario
         Controlador.mostrarInscripcionesConFiltros(numeroSocio, fechaInicio, fechaFin);
     }
+
+    /**
+     * Método para eliminar una excursión del sistema.
+     */
     private static void eliminarExcursion() {
         System.out.println("=== Eliminar Excursión ===");
         System.out.print("Código de la Excursión: ");
@@ -293,18 +344,26 @@ public class MenuPrincipal {
         // Llamada al controlador y manejo del resultado
         boolean resultado = Controlador.eliminarExcursion(codigoExcursion);
         if (resultado) {
-            MenuPrincipal.mostrarMensaje("Excursión eliminada con éxito.");
+            mostrarMensaje("Excursión eliminada con éxito.");
         } else {
-            MenuPrincipal.mostrarMensaje("No se pudo eliminar la excursión.");
+            mostrarMensaje("No se pudo eliminar la excursión.");
         }
     }
 
-    // Método para mostrar mensajes de éxito
+    /**
+     * Método para mostrar mensajes de éxito en la consola.
+     *
+     * @param mensaje El mensaje a mostrar
+     */
     public static void mostrarMensaje(String mensaje) {
         System.out.println(mensaje);
     }
 
-    // Método para mostrar mensajes de error
+    /**
+     * Método para mostrar mensajes de error en la consola.
+     *
+     * @param mensaje El mensaje de error a mostrar
+     */
     public static void mostrarError(String mensaje) {
         System.err.println(mensaje);  // Mostrar en la consola de errores
     }

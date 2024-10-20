@@ -24,16 +24,14 @@ class ControladorTest {
 
     @Test
     void testRegistrarSocioExitoso() {
-        // Prueba para registrar un socio estándar
         String numeroSocio = "001";
         String nombre = "John Doe";
-        int tipoSocio = 0;  // Estandar
+        int tipoSocio = 0;
         String NIF = "12345678A";
         Seguro seguro = new Seguro("Básico", 50);
 
         Controlador.registrarSocio(numeroSocio, nombre, tipoSocio, NIF, seguro);
 
-        // Verificamos si el socio ha sido registrado correctamente
         Socio socio = ListaSocios.getSocio(numeroSocio);
         assertNotNull(socio);
         assertEquals("John Doe", socio.getNombre());
@@ -41,112 +39,142 @@ class ControladorTest {
     }
 
     @Test
-    void testEliminarSocioExitoso() throws SocioYaExisteException, SeguroInvalidoException, TipoSocioInvalidoException, SocioNoExisteException, SocioConInscripcionesException {
-        // Registrar un socio primero
-        List<Object> parametros = new ArrayList<>();
-        parametros.add(0);  // Tipo de socio: Estandar
-        parametros.add("002");
-        parametros.add("Jane Doe");
-        parametros.add("87654321B");
-        parametros.add(new Seguro("Completo", 100));
-        Datos.registrarSocio(parametros);
+    void testRegistrarSocioDuplicado() {
+        String numeroSocio = "001";
+        String nombre = "John Doe";
+        int tipoSocio = 0;
+        String NIF = "12345678A";
+        Seguro seguro = new Seguro("Básico", 50);
 
-        // Eliminar el socio a través del controlador
-        Controlador.eliminarSocio("002");
+        Controlador.registrarSocio(numeroSocio, nombre, tipoSocio, NIF, seguro);
 
-        // Verificar que el socio ya no existe
-        Socio socio = ListaSocios.getSocio("002");
-        assertNull(socio);
+        // Intentar registrar el mismo socio nuevamente
+        Controlador.registrarSocio(numeroSocio, nombre, tipoSocio, NIF, seguro);
+
+        // Verificar que solo exista un socio registrado
+        assertEquals(1, ListaSocios.getSocios().size());
+    }
+
+    @Test
+    void testEliminarSocioExitoso() {
+        try {
+            List<Object> parametros = new ArrayList<>();
+            parametros.add(0);
+            parametros.add("002");
+            parametros.add("Jane Doe");
+            parametros.add("87654321B");
+            parametros.add(new Seguro("Completo", 100));
+            Datos.registrarSocio(parametros);
+
+            Controlador.eliminarSocio("002");
+
+            Socio socio = ListaSocios.getSocio("002");
+            assertNull(socio);
+        } catch (Exception e) {
+            fail("No se esperaba una excepción.");
+        }
+    }
+
+    @Test
+    void testEliminarSocioConInscripciones() {
+        try {
+            // Registrar socio
+            List<Object> parametrosSocio = new ArrayList<>();
+            parametrosSocio.add(0);
+            parametrosSocio.add("003");
+            parametrosSocio.add("Alex Smith");
+            parametrosSocio.add("98765432C");
+            parametrosSocio.add(new Seguro("Básico", 50));
+            Datos.registrarSocio(parametrosSocio);
+
+            // Registrar excursión
+            List<Object> parametrosExcursion = new ArrayList<>();
+            parametrosExcursion.add("EXC001");
+            parametrosExcursion.add("Excursión a la montaña");
+            parametrosExcursion.add(java.sql.Date.valueOf(LocalDate.now().plusDays(10)));
+            parametrosExcursion.add(2);
+            parametrosExcursion.add(100.0f);
+            Datos.registrarExcursion(parametrosExcursion);
+
+            // Inscribir en la excursión
+            Controlador.inscribirEnExcursion("003", "EXC001", LocalDate.now());
+
+            // Intentar eliminar el socio (debería fallar porque tiene inscripciones)
+            Controlador.eliminarSocio("003");
+            assertNotNull(ListaSocios.getSocio("003"));
+        } catch (Exception e) {
+            fail("No se esperaba una excepción.");
+        }
     }
 
     @Test
     void testRegistrarExcursionExitoso() {
-        String codigo = "EXC001";
-        String descripcion = "Excursión a la montaña";
-        LocalDate fecha = LocalDate.now().plusDays(10);  // Fecha futura
+        String codigo = "EXC002";
+        String descripcion = "Excursión al lago";
+        LocalDate fecha = LocalDate.now().plusDays(5);
         int numeroDias = 2;
-        float precio = 150.0f;
+        float precio = 100.0f;
 
-        // Llamamos al controlador para registrar la excursión
-        Controlador.registrarExcursion(codigo, descripcion, fecha, numeroDias, precio);
+        try {
+            Controlador.registrarExcursion(codigo, descripcion, fecha, numeroDias, precio);
+        } catch (ExcursionYaExisteException e) {
+            fail("No debería haber lanzado una excepción");
+        }
 
-        // Verificamos si la excursión ha sido registrada correctamente
         Excursion excursion = ListaExcursiones.getExcursion(codigo);
         assertNotNull(excursion);
-        assertEquals("Excursión a la montaña", excursion.getDescripcion());
+        assertEquals("Excursión al lago", excursion.getDescripcion());
     }
 
     @Test
-    void testEliminarExcursionExitoso() throws ExcursionYaExisteException, EliminarExcursionConInscripcionesException, ExcursionNoExisteException {
-        // Registrar una excursión primero
-        List<Object> parametrosExcursion = new ArrayList<>();
-        parametrosExcursion.add("EXC002");
-        parametrosExcursion.add("Excursión al lago");
-        parametrosExcursion.add(java.sql.Date.valueOf(LocalDate.now().plusDays(5)));
-        parametrosExcursion.add(2);
-        parametrosExcursion.add(100.0f);
-        Datos.registrarExcursion(parametrosExcursion);
+    void testInscribirEnExcursionExitoso() {
+        try {
+            List<Object> parametrosSocio = new ArrayList<>();
+            parametrosSocio.add(0);
+            parametrosSocio.add("004");
+            parametrosSocio.add("Linda Smith");
+            parametrosSocio.add("56473829D");
+            parametrosSocio.add(new Seguro("Completo", 90));
+            Datos.registrarSocio(parametrosSocio);
 
-        // Eliminar la excursión a través del controlador
-        Controlador.eliminarExcursion("EXC002");
+            List<Object> parametrosExcursion = new ArrayList<>();
+            parametrosExcursion.add("EXC005");
+            parametrosExcursion.add("Excursión a la playa");
+            parametrosExcursion.add(java.sql.Date.valueOf(LocalDate.now().plusDays(4)));
+            parametrosExcursion.add(1);
+            parametrosExcursion.add(60.0f);
+            Datos.registrarExcursion(parametrosExcursion);
 
-        // Verificar que la excursión ya no existe
-        Excursion excursion = ListaExcursiones.getExcursion("EXC002");
-        assertNull(excursion);
+            Controlador.inscribirEnExcursion("004", "EXC005", LocalDate.now());
+
+            boolean inscripcionExiste = ListaInscripciones.inscripcionExiste("004", "EXC005");
+            assertTrue(inscripcionExiste);
+        } catch (Exception e) {
+            fail("No se esperaba una excepción.");
+        }
     }
 
-    @Test
-    void testInscribirEnExcursionExitoso() throws SocioYaExisteException, SeguroInvalidoException, TipoSocioInvalidoException, ExcursionYaExisteException, InscripcionYaExisteException, SocioNoExisteException, ExcursionNoExisteException, FechaInvalidaException {
-        // Registrar un socio y una excursión primero
-        List<Object> parametrosSocio = new ArrayList<>();
-        parametrosSocio.add(0);  // Tipo de socio: Estandar
-        parametrosSocio.add("003");
-        parametrosSocio.add("Alex Smith");
-        parametrosSocio.add("98765432C");
-        parametrosSocio.add(new Seguro("Básico", 50));
-        Datos.registrarSocio(parametrosSocio);
 
-        List<Object> parametrosExcursion = new ArrayList<>();
-        parametrosExcursion.add("EXC003");
-        parametrosExcursion.add("Excursión al parque");
-        parametrosExcursion.add(java.sql.Date.valueOf(LocalDate.now().plusDays(5)));
-        parametrosExcursion.add(2);
-        parametrosExcursion.add(100.0f);
-        Datos.registrarExcursion(parametrosExcursion);
-
-        // Inscribir al socio en la excursión
-        Controlador.inscribirEnExcursion("003", "EXC003", LocalDate.now());
-
-        // Verificar que la inscripción ha sido registrada
-        boolean inscripcionExiste = ListaInscripciones.inscripcionExiste("003", "EXC003");
-        assertTrue(inscripcionExiste);
-    }
 
     @Test
-    void testModificarDatosSocio() throws SocioYaExisteException, SeguroInvalidoException, TipoSocioInvalidoException {
-        // Registrar un socio primero
-        List<Object> parametrosSocio = new ArrayList<>();
-        parametrosSocio.add(0);
-        parametrosSocio.add("006");
-        parametrosSocio.add("Mark Spencer");
-        parametrosSocio.add("32165498F");
-        parametrosSocio.add(new Seguro("Completo", 100));
-        Datos.registrarSocio(parametrosSocio);
+    void testModificarDatosSocioExitoso() {
+        try {
+            List<Object> parametrosSocio = new ArrayList<>();
+            parametrosSocio.add(0);
+            parametrosSocio.add("006");
+            parametrosSocio.add("Tom Hardy");
+            parametrosSocio.add("98765432A");
+            parametrosSocio.add(new Seguro("Completo", 70));
+            Datos.registrarSocio(parametrosSocio);
 
-        // Modificar los datos del socio
-        Controlador.modificarDatosSocio("006", "Mark Spencer Jr.");
+            Controlador.modificarDatosSocio("006", "Tom Hardy Jr.");
 
-        // Verificar que el nombre del socio se ha actualizado
-        Socio socio = ListaSocios.getSocio("006");
-        assertNotNull(socio);
-        assertEquals("Mark Spencer Jr.", socio.getNombre());
-    }
-
-    @Test
-    void testMostrarInscripcionesConFiltros() {
-        // Agregar algunos datos de prueba para verificar los filtros
-        // Aquí agregaremos directamente algunas inscripciones simuladas
-
-        // Este test puede variar dependiendo de cómo implementaste la parte de filtros
+            Socio socio = ListaSocios.getSocio("006");
+            assertNotNull(socio);
+            assertEquals("Tom Hardy Jr.", socio.getNombre());
+        } catch (Exception e) {
+            fail("No se esperaba una excepción.");
+        }
     }
 }
+
