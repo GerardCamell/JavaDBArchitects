@@ -38,8 +38,6 @@ public class Estandar extends Socio {
         this.seguro = seguro;
     }
 
-    //He modificado el tostring para que aparezcan los datos completos
-
     // Método toString para proporcionar una representación en texto de la clase
     @Override
     public String toString() {
@@ -49,10 +47,4 @@ public class Estandar extends Socio {
                 "    NIF: '" + getNIF() + "'\n" +
                 "    Seguro: " + seguro + "\n";
     }
-    @Override
-    public boolean modificarSeguro(Seguro nuevoSeguro) {
-        this.seguro = nuevoSeguro;  // Modifica el seguro
-        return true;  // Indica que la modificación fue exitosa
-    }
-
 }

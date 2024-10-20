@@ -3,7 +3,6 @@ package JavaDBArchitects.modelo;
 import JavaDBArchitects.controlador.excepciones.*;
 import java.util.List;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.sql.Date;
 import java.util.ArrayList;
 
@@ -136,9 +135,9 @@ public class Datos {
             throw new InscripcionYaExisteException("El socio ya está inscrito.");
         }
 
-        // Registrar la inscripción con fecha convertida a java.sql.Date
+        // Registrar la inscripción generando un número único
         Inscripcion inscripcion = new Inscripcion(
-                parametros.get(0).toString(),
+                String.valueOf(ListaInscripciones.generarNumeroInscripcion()),  // Genera un número único para la inscripción
                 socio,
                 excursion,
                 java.sql.Date.valueOf(fechaInscripcion)  // Convertimos LocalDate a java.sql.Date
@@ -150,16 +149,23 @@ public class Datos {
     }
 
 
+    public static boolean eliminarInscripcion(String numeroInscripcion) throws InscripcionNoExisteException, CancelacionInvalidaException {
+        Inscripcion inscripcion = ListaInscripciones.getInscripcion(numeroInscripcion);
 
-
-
-    public static boolean eliminarInscripcion(String numeroInscripcion) throws InscripcionNoExisteException {
-        if (!ListaInscripciones.inscripcionExiste(numeroInscripcion)) {
+        if (inscripcion == null) {
             throw new InscripcionNoExisteException("La inscripción no existe.");
+        }
+
+        LocalDate fechaActual = LocalDate.now();
+        LocalDate fechaExcursion = inscripcion.getExcursion().getFechaAsLocalDate();
+
+        if (fechaExcursion.isBefore(fechaActual)) {
+            throw new CancelacionInvalidaException("No se puede eliminar una inscripción de una excursión ya realizada.");
         }
 
         return ListaInscripciones.eliminarInscripcion(numeroInscripcion);
     }
+
 
     public static List<Inscripcion> listarInscripciones() {
         return ListaInscripciones.getInscripciones();
@@ -182,17 +188,4 @@ public class Datos {
         return excursionesEnRango;
     }
 
-    public static boolean modificarSeguroSocioEstandar(String numeroSocio, String tipoSeguro, float precio) throws SocioNoExisteException {
-        Socio socio = ListaSocios.getSocio(numeroSocio);
-        if (socio == null) {
-            throw new SocioNoExisteException("El socio no existe.");
-        }
-
-        if (socio instanceof Estandar) {
-            ((Estandar) socio).setSeguro(new Seguro(tipoSeguro, precio));
-            return true;
-        } else {
-            return false;
-        }
-    }
 }

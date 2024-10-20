@@ -8,10 +8,14 @@ import java.time.ZoneId;
 
 public class ListaInscripciones {
     private static List<Inscripcion> inscripciones = new ArrayList<>();
+    private static int contadorInscripciones = 0; // Contador para el número de inscripciones
 
     // Cargar datos iniciales (si es necesario)
     public static void cargarDatosInscripciones() {
-        // Si necesitas cargar datos predeterminados, lo puedes hacer aquí
+        // Si necesitáramos cargar datos predeterminados, lo podemos hacer aquí
+    }
+    public static int generarNumeroInscripcion() {
+        return ++contadorInscripciones;
     }
 
     // Agregar una inscripción a la lista

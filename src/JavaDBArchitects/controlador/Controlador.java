@@ -3,12 +3,12 @@ package JavaDBArchitects.controlador;
 import JavaDBArchitects.controlador.excepciones.*;
 import JavaDBArchitects.modelo.*;
 import JavaDBArchitects.vista.MenuPrincipal;
-import java.util.stream.Collectors;
+
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Controlador {
     private static final DateTimeFormatter FORMATO_FECHA = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -64,16 +64,19 @@ public class Controlador {
     }
 
     // Método para eliminar una excursión
-    public static void eliminarExcursion(String codigoExcursion) {
+    public static boolean eliminarExcursion(String codigoExcursion) {
         try {
-            Datos.eliminarExcursion(codigoExcursion);
-            MenuPrincipal.mostrarMensaje("Excursión eliminada con éxito.");
+            // Solo retorna el resultado, sin mostrar el mensaje aquí
+            return Datos.eliminarExcursion(codigoExcursion);
         } catch (ExcursionNoExisteException e) {
             MenuPrincipal.mostrarError("Error: La excursión no existe.");
+            return false;  // Devolver false si la excursión no existe
         } catch (EliminarExcursionConInscripcionesException e) {
             MenuPrincipal.mostrarError("Error: La excursión tiene inscripciones activas y no puede ser eliminada.");
+            return false;  // Devolver false si no se puede eliminar por inscripciones activas
         }
     }
+
 
     public static void inscribirEnExcursion(String numeroSocio, String codigoExcursion, LocalDate fechaInscripcion) {
         try {
@@ -95,16 +98,18 @@ public class Controlador {
         }
     }
 
-
-    // Método para eliminar una inscripción
+// Método para eliminar una inscripción
     public static void eliminarInscripcion(String numeroInscripcion) {
         try {
             Datos.eliminarInscripcion(numeroInscripcion);
             MenuPrincipal.mostrarMensaje("Inscripción eliminada con éxito.");
         } catch (InscripcionNoExisteException e) {
             MenuPrincipal.mostrarError("Error: La inscripción no existe.");
+        } catch (CancelacionInvalidaException e) {
+            MenuPrincipal.mostrarError(e.getMessage());
         }
     }
+
 
     // Método para listar todas las inscripciones
     public static void listarInscripciones() {
@@ -114,7 +119,7 @@ public class Controlador {
             LocalDate fechaExcursion = sqlDate.toLocalDate(); // Convertir a LocalDate
 
             // Mostrar la inscripción formateando la fecha
-            MenuPrincipal.mostrarMensaje("Inscripción: " + inscripcion.toString() + ", Fecha: " + fechaExcursion.format(FORMATO_FECHA));
+            MenuPrincipal.mostrarMensaje("Inscripción: " + inscripcion + ", Fecha: " + fechaExcursion.format(FORMATO_FECHA));
         }
     }
 
@@ -194,25 +199,6 @@ public class Controlador {
         }
     }
 
-
-    // Método corregido para modificar seguro de un socio estándar
-    public static boolean modificarSeguroSocioEstandar(String numeroSocio, String tipoSeguro, float precio) throws SocioNoExisteException {
-        Socio socio = ListaSocios.getSocio(numeroSocio);
-
-        if (socio == null) {
-            throw new SocioNoExisteException("El socio no existe.");
-        }
-
-        if (socio instanceof Estandar) {
-            Seguro nuevoSeguro = new Seguro(tipoSeguro, precio);
-            ((Estandar) socio).setSeguro(nuevoSeguro);
-            MenuPrincipal.mostrarMensaje("Seguro del socio actualizado con éxito.");
-            return true;
-        } else {
-            MenuPrincipal.mostrarError("El socio no es de tipo estándar.");
-            return false;
-        }
-    }
 
     // Método para listar todos los socios o por tipo
     public static void listarSocios(int tipoSocio) {
