@@ -55,12 +55,15 @@ public class Excursion {
             return fecha.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         }
     }
+    public LocalDate calcularFechaFin() {
+        return getFechaAsLocalDate().plusDays(numDias - 1); // Calcular días de la excursión
+    }
 
     public void setFecha(Date fecha) {
         this.fecha = fecha;
     }
 
-    // También puedes agregar un método setter que acepte LocalDate
+    // También puedes agregar un metodo setter que acepte LocalDate
     public void setFecha(LocalDate fechaLocalDate) {
         this.fecha = Date.from(fechaLocalDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
     }
@@ -73,21 +76,27 @@ public class Excursion {
         this.numDias = numDias;
     }
 
-    public float getPrecioInscripcion() {
-        return precioInscripcion;
-    }
+    public float getPrecioInscripcion() {return precioInscripcion;}
 
-    public void setPrecioInscripcion(float precioInscripcion) {
-        this.precioInscripcion = precioInscripcion;
-    }
 
-    // Método toString modificado para mostrar la fecha formateada
+    public void setPrecioInscripcion(float precioInscripcion) {this.precioInscripcion = precioInscripcion;}
+
+    // Metodo toString modificado para mostrar la fecha formateada
     @Override
     public String toString() {
+        String newPrecio; // Cambiar formato del precio en función si es entero o float
+        if(precioInscripcion % 1 == 0){
+            newPrecio = String.format("%d",(int)precioInscripcion); // Si es entero
+        }else{
+            newPrecio = String.format("%.2f",precioInscripcion); // Si es float
+        }
+
         return "Código: " + codigo + "\n" +
                 "Descripción: " + descripcion + "\n" +
                 "Fecha: " + getFechaAsLocalDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + "\n" +
                 "Número de días: " + numDias + "\n" +
-                "Precio inscripción: " + precioInscripcion;
+                "Precio inscripción: " + newPrecio;
+
+
     }
 }

@@ -216,14 +216,20 @@ public class MenuPrincipal {
 
         System.out.print("Número de Días: ");
         int numeroDias = scanner.nextInt();
-        System.out.print("Precio: ");
-        float precio = scanner.nextFloat();
         scanner.nextLine();  // Capturar la línea vacía
+        System.out.print("Precio: ");
+        String precioStr = scanner.nextLine().replace(',', '.'); // Para que no de error cuando ingresamos "."
 
-        Controlador.registrarExcursion(codigo, descripcion, fecha, numeroDias, precio);
+        try {
+            float precio = Float.parseFloat(precioStr); // Convertir a float otra vez
+            Controlador.registrarExcursion(codigo, descripcion, fecha, numeroDias, precio);
+        } catch (NumberFormatException e) {
+            System.out.println("Error: El precio ingresado no es válido. Asegúrate de usar el formato correcto.");
+        }
     }
 
-    // Método para listar excursiones por fechas
+
+    // Metodo para listar excursiones por fechas
     private static void listarExcursionesPorFechas() {
         System.out.println("=== Listar Excursiones por Fechas ===");
         System.out.print("Fecha Inicio (DD/MM/YYYY): ");
