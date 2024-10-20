@@ -32,10 +32,6 @@ public abstract class Socio {
 
     // Método abstracto: Cada tipo de socio implementará su propia lógica para calcular la cuota mensual
     public abstract double calcularCuotaMensual();
-    // Método para modificar el seguro, por defecto no hace nada
-    public boolean modificarSeguro(Seguro nuevoSeguro) {
-        return false;  // El socio base no tiene seguro, así que devuelve false
-    }
 
     // Método toString: Proporciona una representación en texto de la clase
     @Override

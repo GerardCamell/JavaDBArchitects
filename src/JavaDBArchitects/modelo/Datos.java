@@ -188,17 +188,4 @@ public class Datos {
         return excursionesEnRango;
     }
 
-    public static boolean modificarSeguroSocioEstandar(String numeroSocio, String tipoSeguro, float precio) throws SocioNoExisteException {
-        Socio socio = ListaSocios.getSocio(numeroSocio);
-        if (socio == null) {
-            throw new SocioNoExisteException("El socio no existe.");
-        }
-
-        if (socio instanceof Estandar) {
-            ((Estandar) socio).setSeguro(new Seguro(tipoSeguro, precio));
-            return true;
-        } else {
-            return false;
-        }
-    }
 }

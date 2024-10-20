@@ -3,12 +3,12 @@ package JavaDBArchitects.controlador;
 import JavaDBArchitects.controlador.excepciones.*;
 import JavaDBArchitects.modelo.*;
 import JavaDBArchitects.vista.MenuPrincipal;
-import java.util.stream.Collectors;
+
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Controlador {
     private static final DateTimeFormatter FORMATO_FECHA = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -119,7 +119,7 @@ public class Controlador {
             LocalDate fechaExcursion = sqlDate.toLocalDate(); // Convertir a LocalDate
 
             // Mostrar la inscripción formateando la fecha
-            MenuPrincipal.mostrarMensaje("Inscripción: " + inscripcion.toString() + ", Fecha: " + fechaExcursion.format(FORMATO_FECHA));
+            MenuPrincipal.mostrarMensaje("Inscripción: " + inscripcion + ", Fecha: " + fechaExcursion.format(FORMATO_FECHA));
         }
     }
 
@@ -199,25 +199,6 @@ public class Controlador {
         }
     }
 
-
-    // Método corregido para modificar seguro de un socio estándar
-    public static boolean modificarSeguroSocioEstandar(String numeroSocio, String tipoSeguro, float precio) throws SocioNoExisteException {
-        Socio socio = ListaSocios.getSocio(numeroSocio);
-
-        if (socio == null) {
-            throw new SocioNoExisteException("El socio no existe.");
-        }
-
-        if (socio instanceof Estandar) {
-            Seguro nuevoSeguro = new Seguro(tipoSeguro, precio);
-            ((Estandar) socio).setSeguro(nuevoSeguro);
-            MenuPrincipal.mostrarMensaje("Seguro del socio actualizado con éxito.");
-            return true;
-        } else {
-            MenuPrincipal.mostrarError("El socio no es de tipo estándar.");
-            return false;
-        }
-    }
 
     // Método para listar todos los socios o por tipo
     public static void listarSocios(int tipoSocio) {
