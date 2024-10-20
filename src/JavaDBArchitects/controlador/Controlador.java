@@ -98,16 +98,18 @@ public class Controlador {
         }
     }
 
-
-    // Método para eliminar una inscripción
+// Método para eliminar una inscripción
     public static void eliminarInscripcion(String numeroInscripcion) {
         try {
             Datos.eliminarInscripcion(numeroInscripcion);
             MenuPrincipal.mostrarMensaje("Inscripción eliminada con éxito.");
         } catch (InscripcionNoExisteException e) {
             MenuPrincipal.mostrarError("Error: La inscripción no existe.");
+        } catch (CancelacionInvalidaException e) {
+            MenuPrincipal.mostrarError(e.getMessage());
         }
     }
+
 
     // Método para listar todas las inscripciones
     public static void listarInscripciones() {

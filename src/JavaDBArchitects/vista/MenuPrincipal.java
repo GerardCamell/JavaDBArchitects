@@ -4,8 +4,6 @@ import JavaDBArchitects.controlador.Controlador;
 import JavaDBArchitects.modelo.*;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 import java.time.format.DateTimeFormatter;
 

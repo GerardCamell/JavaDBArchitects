@@ -149,13 +149,23 @@ public class Datos {
     }
 
 
-    public static boolean eliminarInscripcion(String numeroInscripcion) throws InscripcionNoExisteException {
-        if (!ListaInscripciones.inscripcionExiste(numeroInscripcion)) {
+    public static boolean eliminarInscripcion(String numeroInscripcion) throws InscripcionNoExisteException, CancelacionInvalidaException {
+        Inscripcion inscripcion = ListaInscripciones.getInscripcion(numeroInscripcion);
+
+        if (inscripcion == null) {
             throw new InscripcionNoExisteException("La inscripción no existe.");
+        }
+
+        LocalDate fechaActual = LocalDate.now();
+        LocalDate fechaExcursion = inscripcion.getExcursion().getFechaAsLocalDate();
+
+        if (fechaExcursion.isBefore(fechaActual)) {
+            throw new CancelacionInvalidaException("No se puede eliminar una inscripción de una excursión ya realizada.");
         }
 
         return ListaInscripciones.eliminarInscripcion(numeroInscripcion);
     }
+
 
     public static List<Inscripcion> listarInscripciones() {
         return ListaInscripciones.getInscripciones();
