@@ -42,9 +42,9 @@ public class Estandar extends Socio {
     @Override
     public String toString() {
         return "Estandar \n" +
-                "    Número de Socio: '" + getNumeroSocio() + "'\n" +
-                "    Nombre: '" + getNombre() + "'\n" +
-                "    NIF: '" + getNIF() + "'\n" +
-                "    Seguro: " + seguro + "\n";
+                "Número de Socio: '" + getNumeroSocio() + "'\n" +
+                "Nombre: '" + getNombre() + "'\n" +
+                "NIF: '" + getNIF() + "'\n" +
+                "Seguro: " + seguro + "\n";
     }
 }

@@ -1,9 +1,11 @@
 package JavaDBArchitects.modelo;
 
 import java.sql.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class Inscripcion {
-
+    private static final DateTimeFormatter FORMATO_FECHA = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private String numInscripcion;
     private Socio socio;
     private Excursion excursion;
@@ -40,9 +42,7 @@ public class Inscripcion {
         this.excursion = excursion;
     }
 
-    public Date getFechaInscripcion() {
-        return fechaInscripcion;
-    }
+    public Date getFechaInscripcion() {return fechaInscripcion;}
 
     public void setFechaInscripcion(Date fechaInscripcion) {
         this.fechaInscripcion = fechaInscripcion;
@@ -50,11 +50,8 @@ public class Inscripcion {
 
     @Override
     public String toString() {
-        return "Inscripcion{" +
-                "numInscripcion='" + numInscripcion + '\'' +
-                ", socio=" + socio +
-                ", excursion=" + excursion +
-                ", fechaInscripcion=" + fechaInscripcion +
-                '}';
+        LocalDate fechaInscripcionLocal = fechaInscripcion.toLocalDate();
+        return "Nº Inscripcion: " + numInscripcion + '\n' +"Tipo de Socio: " + socio + "-- Excursion -- \n" + excursion + '\n' +
+                "Fecha de la Inscripción: " + fechaInscripcionLocal.format(FORMATO_FECHA);
     }
 }

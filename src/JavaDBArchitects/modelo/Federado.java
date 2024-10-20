@@ -42,10 +42,10 @@ public class Federado extends Socio {
     @Override
     public String toString() {
         return String.format("Federado \n" +
-                        "    Número de Socio: '%s',\n" +
-                        "    Nombre: '%s',\n" +
-                        "    NIF: '%s',\n" +
-                        "    Federación: %s\n",
+                        "Número de Socio: '%s',\n" +
+                        "Nombre: '%s',\n" +
+                        "NIF: '%s',\n" +
+                        "%s\n",
                 getNumeroSocio(), getNombre(), NIF, federacion.toString());
     }
 }

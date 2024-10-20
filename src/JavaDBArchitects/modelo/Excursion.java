@@ -45,7 +45,7 @@ public class Excursion {
         return fecha;
     }
 
-    // Método para obtener la fecha como LocalDate
+    // Metodo para obtener la fecha como LocalDate
     public LocalDate getFechaAsLocalDate() {
         if (fecha instanceof java.sql.Date) {
             // Convertir java.sql.Date a java.time.LocalDate directamente

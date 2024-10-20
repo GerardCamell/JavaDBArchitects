@@ -31,6 +31,6 @@ public class Federacion {
     // Método toString para proporcionar una representación en texto de la clase
     @Override
     public String toString() {
-        return  "Codigo y nombre" +  federacion + '\'' + nombre + '\'';
+        return  "Codigo: " + federacion + '\n' + "Nombre: " +  nombre + '\n';
     }
 }

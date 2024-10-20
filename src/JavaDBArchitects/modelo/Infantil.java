@@ -29,9 +29,9 @@ public class Infantil extends Socio {
     @Override
     public String toString() {
         return String.format("Infantil {\n" +
-                        "    Número de Socio: '%s',\n" +
-                        "    Nombre: '%s',\n" +
-                        "    NIF del tutor: '%s'\n" +
+                        "Número de Socio: '%s',\n" +
+                        "Nombre: '%s',\n" +
+                        "NIF del tutor: '%s'\n" +
                         "}",
                 getNumeroSocio(),
                 getNombre(),

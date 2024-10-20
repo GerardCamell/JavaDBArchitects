@@ -117,9 +117,17 @@ public class Controlador {
         for (Inscripcion inscripcion : inscripciones) {
             java.sql.Date sqlDate = (java.sql.Date) inscripcion.getExcursion().getFecha(); // Conversión a sql.Date
             LocalDate fechaExcursion = sqlDate.toLocalDate(); // Convertir a LocalDate
+            LocalDate fechaFinExcursion = inscripcion.getExcursion().calcularFechaFin();
+            int nDias = inscripcion.getExcursion().getNumDias();
+            
 
             // Mostrar la inscripción formateando la fecha
-            MenuPrincipal.mostrarMensaje("Inscripción: " + inscripcion + ", Fecha: " + fechaExcursion.format(FORMATO_FECHA));
+            if(nDias > 1){
+                MenuPrincipal.mostrarMensaje( inscripcion + "\n"+"\n-- Las Fechas de la Excursión --\n" + "Fecha de INICIO de la Excursión: " + fechaExcursion.format(FORMATO_FECHA)+ "\n" + "Fecha FINAL de la Excursión: " + fechaFinExcursion.format(FORMATO_FECHA)+"\n");
+            }else{
+                MenuPrincipal.mostrarMensaje( inscripcion + "\n Fecha de la Excursión: " + fechaExcursion.format(FORMATO_FECHA));
+            }
+
         }
     }
 
