@@ -186,7 +186,7 @@ public class Controlador {
             cuotaMensual = 0; // Caso no válido
         }
 
-        // Inicializar el total de la factura
+        // Inicializar el calculo total de la factura
         float totalFactura = cuotaMensual;
 
         // Obtener las inscripciones del socio
