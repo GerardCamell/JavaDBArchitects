@@ -265,7 +265,7 @@ public class Datos {
 
         return ListaInscripciones.eliminarInscripcion(numeroInscripcion);
     }
-
+//jeje
     /**
      * Lista todas las inscripciones registradas.
      *
