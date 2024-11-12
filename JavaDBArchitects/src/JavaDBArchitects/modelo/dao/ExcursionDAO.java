@@ -30,6 +30,32 @@ public class ExcursionDAO {
         }
     }
 
+    //Metodo para regitsrar excursion mediante procedimiento almacenado
+
+public static void registrarExcursionPA(String idExcursion, String descripcion, LocalDate fecha, int numDias, float precioInscripcion) {
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/producto3", "root", "Gecabo13bcn24021")) {
+            String sql = "{CALL registrarExcursion(?, ?, ?, ?, ?)}";
+            try (CallableStatement stmt = conn.prepareCall(sql)) {
+                // Establecer los parámetros del procedimiento
+                stmt.setString(1, idExcursion);
+                stmt.setString(2, descripcion);
+                Date fechaSQL = Date.valueOf(fecha);
+                stmt.setDate(3, Date.valueOf(fecha));
+                stmt.setInt(4, numDias);
+                stmt.setFloat(5, precioInscripcion);
+
+                // Ejecutar el procedimiento
+                stmt.executeUpdate();
+                System.out.println("Excursión registrada correctamente.");
+            } catch (SQLException e) {
+                System.err.println("Error al ejecutar el procedimiento: " + e.getMessage());
+            }
+        } catch (SQLException e) {
+            System.err.println("Error de conexión a la base de datos: " + e.getMessage());
+        }
+    }
+
+
     // Método para verificar si una excursión existe según su código
     public boolean excursionExiste(String codigoExcursion) {
         String query = "SELECT COUNT(*) FROM Excursiones WHERE idExcursion = ?";
@@ -114,6 +140,7 @@ public class ExcursionDAO {
             e.printStackTrace();
         }
     }
+
     // Método en ExcursionDAO para obtener excursiones entre dos fechas
     public List<Excursion> getExcursionesEntreFechas(LocalDate fechaInicio, LocalDate fechaFin) {
         List<Excursion> excursiones = new ArrayList<>();
@@ -141,6 +168,7 @@ public class ExcursionDAO {
 
         return excursiones;
     }
+
     public List<Excursion> getAllExcursiones() {
         List<Excursion> excursiones = new ArrayList<>();
         String query = "SELECT * FROM Excursiones";
@@ -163,6 +191,7 @@ public class ExcursionDAO {
         }
         return excursiones;
     }
+
     // Método para eliminar todas las excursiones
     public void deleteAllExcursiones() {
         String query = "DELETE FROM Excursiones";
@@ -175,6 +204,7 @@ public class ExcursionDAO {
             e.printStackTrace();
         }
     }
+
     // Método para actualizar una excursión existente
     public boolean updateExcursion(Excursion excursion) {
         String query = "UPDATE Excursiones SET descripcion = ?, fecha = ?, num_dias = ?, precio = ? WHERE idExcursion = ?";
@@ -194,6 +224,11 @@ public class ExcursionDAO {
         }
         return false; // Retorna false en caso de fallo
     }
+
 }
+
+
+
+
 
 

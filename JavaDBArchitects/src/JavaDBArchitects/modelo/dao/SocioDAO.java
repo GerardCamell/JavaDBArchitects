@@ -84,6 +84,52 @@ public class SocioDAO {
         }
     }
 
+
+    //Metodo registrarSocio mediante procedimiento almacenado
+
+    public static void registrarSocioPA(String nombre, int tipoSocio, String nif, int idFederacion, Integer idSocioPadre, Object extra) {
+        // Aquí realizas la llamada al procedimiento almacenado en MySQL
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/producto3", "root", "Gecabo13bcn24021")) {
+            String sql = "{CALL registrarSocio(?, ?, ?, ?, ?, ?)}";
+            try (CallableStatement stmt = conn.prepareCall(sql)) {
+                // Establecemos los parámetros de entrada del procedimiento almacenado
+                stmt.setString(1, nombre);
+                stmt.setString(2, obtenerTipoSocio(tipoSocio));  // Convierte el tipoSocio en el valor adecuado (ESTANDAR, FEDERADO, INFANTIL)
+                stmt.setString(3, nif);
+                stmt.setInt(4, idFederacion);
+                stmt.setObject(5, idSocioPadre);  // Puede ser null si no es federado
+                stmt.setString(6, obtenerTipoSeguro(extra));  // Obtén el tipo de seguro si aplica
+
+                // Ejecutar el procedimiento
+                stmt.executeUpdate();
+                System.out.println("Socio registrado correctamente.");
+            } catch (SQLException e) {
+                System.err.println("Error al ejecutar el procedimiento: " + e.getMessage());
+            }
+        } catch (SQLException e) {
+            System.err.println("Error de conexión: " + e.getMessage());
+        }
+    }
+
+    private static String obtenerTipoSocio(int tipoSocio) {
+        // Mapear el valor numérico a una cadena ENUM de tipoSocio
+        switch (tipoSocio) {
+            case 0: return "ESTANDAR";
+            case 1: return "FEDERADO";
+            case 2: return "INFANTIL";
+            default: throw new IllegalArgumentException("Tipo de socio inválido.");
+        }
+    }
+
+    private static String obtenerTipoSeguro(Object extra) {
+        // Si el socio es Estandar, tenemos un seguro asociado
+        if (extra instanceof Seguro) {
+            Seguro seguro = (Seguro) extra;
+            return seguro.getTipo().toString();  // Devuelve "BASICO" o "COMPLETO"
+        }
+        return null;  // No hay seguro si el socio no es Estandar
+    }
+
     // Método para insertar federación con un ID específico si no existe
     private void insertarFederacionConId(Integer idFederacion, String nombreFederacion, Connection connection) throws SQLException {
         String query = "INSERT INTO federaciones (id_federacion, nombre) VALUES (?, ?)";

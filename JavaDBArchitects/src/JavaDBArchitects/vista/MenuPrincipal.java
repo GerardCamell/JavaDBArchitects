@@ -6,6 +6,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 import JavaDBArchitects.controlador.excepciones.ExcursionYaExisteException;
+import JavaDBArchitects.modelo.dao.ExcursionDAO;
+import JavaDBArchitects.modelo.dao.SocioDAO;
 
 public class MenuPrincipal {
 
@@ -38,7 +40,7 @@ public class MenuPrincipal {
 
             switch (opcion) {
                 case 1 -> registrarExcursion();
-                case 2 -> registrarSocio();
+                case 2 -> registrarSocioPAMenu();
                 case 3 -> inscribirEnExcursion();
                 case 4 -> listarExcursionesPorFechas();
                 case 5 -> listarInscripciones();
@@ -102,11 +104,48 @@ public class MenuPrincipal {
 
 
 
+    private static void registrarSocioPAMenu() {
+        System.out.println("=== Registrar Socio ===");
+        System.out.print("Nombre del Socio: ");
+        String nombre = scanner.nextLine();
+        System.out.print("Tipo de Socio (0: Estandar, 1: Federado, 2: Infantil): ");
+        int tipoSocio = scanner.nextInt();
+        scanner.nextLine();  // Capturar la línea vacía
+        System.out.print("NIF: ");
+        String NIF = scanner.nextLine();
 
+        Object extra = null;
+        int idFederacion = 0;  // Lo inicializamos en 0
+        Integer idSocioPadre = null;  // Lo inicializamos en null
 
+        if (tipoSocio == 0) {  // Estandar
+            System.out.print("Tipo de Seguro (BASICO o COMPLETO): ");
+            String tipoSeguroInput = scanner.nextLine().toUpperCase().trim();
 
+            TipoSeguro tipoSeguro = null;
+            if (tipoSeguroInput.equals("BASICO")) {
+                tipoSeguro = TipoSeguro.BASICO;
+            } else if (tipoSeguroInput.equals("COMPLETO")) {
+                tipoSeguro = TipoSeguro.COMPLETO;
+            } else {
+                System.out.println("Error: Tipo de seguro inválido. Debe ser BASICO o COMPLETO.");
+                return;
+            }
 
+            float precioSeguro = tipoSeguro == TipoSeguro.BASICO ? 50.0f : 100.0f;
+            extra = new Seguro(tipoSeguro, precioSeguro); // El seguro se crea correctamente y se asigna
+        } else if (tipoSocio == 1) {  // Federado
+            System.out.print("ID de la Federación: ");
+            idFederacion = scanner.nextInt();
+            scanner.nextLine();  // Capturar la línea vacía
+            System.out.print("Nombre de la Federación: ");
+            String nombreFederacion = scanner.nextLine();
+            extra = new Federacion(idFederacion, nombreFederacion);
+        }
 
+        // Llamamos al controlador que a su vez invocará el procedimiento almacenado para registrar el socio
+        SocioDAO.registrarSocioPA   (nombre, tipoSocio, NIF, idFederacion, idSocioPadre, extra);
+    }
 
 
     private static void eliminarSocio() {
@@ -163,6 +202,27 @@ public class MenuPrincipal {
         String numeroInscripcion = scanner.nextLine();
 
         Controlador.eliminarInscripcion(numeroInscripcion);
+    }
+
+    private static void registrarExcursionPAMenu() {
+        System.out.println("=== Registrar Excursión ===");
+        System.out.print("Código: ");
+        String codigo = scanner.nextLine();
+        System.out.print("Descripción: ");
+        String descripcion = scanner.nextLine();
+        System.out.print("Fecha (DD/MM/YYYY): ");
+        String fechaStr = scanner.nextLine();
+
+        LocalDate fecha = LocalDate.parse(fechaStr, formatter);
+
+        System.out.print("Número de Días: ");
+        int numeroDias = scanner.nextInt();
+        scanner.nextLine();  // Capturar la línea vacía
+        System.out.print("Precio: ");
+        float precio = scanner.nextFloat();
+        scanner.nextLine();  // Capturar la línea vacía
+
+        ExcursionDAO.registrarExcursionPA(codigo, descripcion, fecha, numeroDias, precio);
     }
 
     private static void registrarExcursion() {
