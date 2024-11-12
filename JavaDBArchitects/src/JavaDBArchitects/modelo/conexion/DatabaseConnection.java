@@ -1,3 +1,4 @@
+
 package JavaDBArchitects.modelo.conexion;
 
 import java.sql.Connection;
@@ -10,7 +11,11 @@ public class DatabaseConnection {
     private static final String PASSWORD = "Againdifficult23!";
 
     public static Connection getConnection() throws SQLException {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");  // Asegura el registro del driver
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
         return DriverManager.getConnection(URL, USER, PASSWORD);
-
     }
 }
