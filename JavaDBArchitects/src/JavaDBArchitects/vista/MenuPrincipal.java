@@ -61,7 +61,7 @@ public class MenuPrincipal {
         }
     }
 
-    //Prueba
+
 
     private static void registrarSocioPAMenu() {
         System.out.println("=== Registrar Socio ===");
