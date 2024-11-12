@@ -1,4 +1,6 @@
 package JavaDBArchitects.modelo;
+import java.math.BigDecimal;
+
 
 /**
  * Clase abstracta Socio: Representa a un socio del centro.
@@ -13,7 +15,7 @@ public abstract class Socio {
     private TipoSeguro tipoSeguro; // Tipo de seguro para socios ESTANDAR (BASICO o COMPLETO)
     private Integer idFederacion;  // ID de la federación asociada (opcional, depende del tipo de socio)
     private Integer idSocioPadre;  // ID del socio padre (opcional, solo para tipo infantil)
-
+    private BigDecimal cuotaMensual;  // Nuevo atributo para cuota mensual
     /**
      * Constructor de Socio.
      *
@@ -25,7 +27,7 @@ public abstract class Socio {
      * @param idFederacion   ID de la federación, opcional.
      * @param idSocioPadre   ID del socio padre, opcional.
      */
-    public Socio(int numeroSocio, String nombre, String tipoSocio, String nif, TipoSeguro tipoSeguro, Integer idFederacion, Integer idSocioPadre) {
+    public Socio(int numeroSocio, String nombre, String tipoSocio, String nif, TipoSeguro tipoSeguro, Integer idFederacion, Integer idSocioPadre, BigDecimal cuotaMensual) {
         this.numeroSocio = numeroSocio;
         this.nombre = nombre;
         this.tipoSocio = tipoSocio;
@@ -33,6 +35,7 @@ public abstract class Socio {
         this.tipoSeguro = tipoSeguro;
         this.idFederacion = idFederacion;
         this.idSocioPadre = idSocioPadre;
+        this.cuotaMensual = cuotaMensual;
     }
 
     // Getters y Setters
@@ -93,6 +96,14 @@ public abstract class Socio {
         this.idSocioPadre = idSocioPadre;
     }
 
+    public BigDecimal getCuotaMensual() {
+        return cuotaMensual;
+    }
+
+    public void setCuotaMensual(BigDecimal cuotaMensual) {
+        this.cuotaMensual = cuotaMensual;
+    }
+
     /**
      * Método abstracto que debe ser implementado por cada subclase de Socio para calcular la cuota mensual.
      *
@@ -115,6 +126,7 @@ public abstract class Socio {
                 ", tipoSeguro=" + tipoSeguro +
                 ", idFederacion=" + idFederacion +
                 ", idSocioPadre=" + idSocioPadre +
+                ", cuotaMensual=" + cuotaMensual +
                 '}';
     }
 }

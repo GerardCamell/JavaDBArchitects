@@ -10,6 +10,7 @@ import java.util.List;
 import java.time.LocalDate;
 import java.sql.Date;
 import java.util.ArrayList;
+import java.math.BigDecimal;
 
 public class Datos {
 
@@ -28,25 +29,25 @@ public class Datos {
         int numeroSocio = (Integer) parametros.get(1);
         String nombre = parametros.get(2).toString();
         String NIF = parametros.get(3).toString();
+        BigDecimal cuotaMensual = (BigDecimal) parametros.get(5);
 
         if (tipoSocio == 0) {
             Seguro seguro = (Seguro) parametros.get(4);
-            socio = new Estandar(numeroSocio, nombre, NIF, seguro);
+            socio = new Estandar(numeroSocio, nombre, NIF, seguro, cuotaMensual);
 
         } else if (tipoSocio == 1) {
             Federacion federacion = (Federacion) parametros.get(4);
-            socio = new Federado(numeroSocio, nombre, NIF, federacion);
+            socio = new Federado(numeroSocio, nombre, NIF, federacion, cuotaMensual);
 
         } else if (tipoSocio == 2) {
             int numSocioPadreOMadre = (Integer) parametros.get(4);
-            socio = new Infantil(numeroSocio, nombre, numSocioPadreOMadre);
+            socio = new Infantil(numeroSocio, nombre, numSocioPadreOMadre, cuotaMensual);
 
         } else {
             throw new TipoSocioInvalidoException("El tipo de socio es inválido.");
         }
 
-        // Verifica si el socio ya existe en la base de datos
-        if (socioDAO.socioExiste(numeroSocio)) { // Cambiado a int
+        if (socioDAO.socioExiste(numeroSocio)) {
             throw new SocioYaExisteException("El socio con número " + numeroSocio + " ya existe.");
         }
 
