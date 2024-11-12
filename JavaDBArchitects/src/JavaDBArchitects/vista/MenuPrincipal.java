@@ -52,7 +52,7 @@ public class MenuPrincipal {
                 case 6 -> consultarFacturaMensual();
                 case 7 -> modificarDatosSocio();
                 case 8 -> mostrarSociosPorTipo();
-                case 9 -> eliminarInscripcion();
+                case 9 -> eliminarInscripcionPAMenu();
                 case 10 -> eliminarSocioPAMenu();
                 case 11 -> mostrarInscripcionesConFiltros();
                 case 12 -> eliminarExcursion();
@@ -61,8 +61,6 @@ public class MenuPrincipal {
             }
         }
     }
-
-
 
     private static void registrarSocioPAMenu() {
         System.out.println("=== Registrar Socio ===");
@@ -245,6 +243,14 @@ public class MenuPrincipal {
         String numeroInscripcion = scanner.nextLine();
 
         Controlador.eliminarInscripcion(numeroInscripcion);
+    }
+
+    private static void eliminarInscripcionPAMenu() {
+        System.out.println("=== Eliminar Inscripción ===");
+        System.out.print("Número de Inscripción: ");
+        int numeroInscripcion = Integer.parseInt(scanner.nextLine());
+
+        InscripcionDAO.eliminarInscripcionPA(numeroInscripcion);
     }
 
     private static void registrarExcursion() {

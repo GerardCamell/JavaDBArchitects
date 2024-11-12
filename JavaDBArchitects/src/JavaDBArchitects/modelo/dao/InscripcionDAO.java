@@ -179,7 +179,6 @@ public class InscripcionDAO {
     }
 
 
-
     public boolean socioTieneInscripciones(int numeroSocio) {
         String query = "SELECT COUNT(*) FROM Inscripciones WHERE id_socio = ?";
         try (Connection connection = DatabaseConnection.getConnection();
@@ -240,7 +239,6 @@ public class InscripcionDAO {
     }
 
 
-
     // Método para eliminar una inscripción por su número de inscripción
     public boolean eliminarInscripcion(String numInscripcion) throws InscripcionNoExisteException, CancelacionInvalidaException {
         String query = "DELETE FROM Inscripciones WHERE id_inscripcion = ?";
@@ -269,7 +267,66 @@ public class InscripcionDAO {
         return false;
     }
 
-    // Método auxiliar para obtener la fecha de una excursión asociada a una inscripción específica
+    //Metodo para eliminar una inscripción mediante procedimiento almacenado
+
+    public static boolean eliminarInscripcionPA(int idInscripcion) {
+
+        // Declarar la conexión y la llamada al procedimiento almacenado
+        Connection conn = null;
+        CallableStatement stmt = null;
+        boolean eliminado = false;
+
+        try {
+            // Conectar a la base de datos
+            conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/producto3", "root", "Gecabo13bcn24021");
+            conn.setAutoCommit(false);  // Iniciar la transacción
+
+            // Llamar al procedimiento almacenado
+            String sql = "{CALL eliminarInscripcion(?)}";
+            stmt = conn.prepareCall(sql);
+
+            // Configurar el parámetro de entrada
+            stmt.setInt(1, idInscripcion);
+
+            // Ejecutar el procedimiento
+            int rowsAffected = stmt.executeUpdate();
+
+            // Confirmar la transacción si se eliminó alguna fila
+            if (rowsAffected > 0) {
+                conn.commit();
+                eliminado = true;
+                System.out.println("Inscripción eliminada correctamente.");
+            } else {
+                System.out.println("No se encontró ninguna inscripción con el ID proporcionado.");
+                conn.rollback();  // Deshacer si no se eliminó ninguna fila
+            }
+
+        } catch (SQLException e) {
+            // Manejar errores de SQL
+            System.err.println("Error al eliminar inscripción: " + e.getMessage());
+            try {
+                if (conn != null) {
+                    conn.rollback();  // Deshacer en caso de error
+                }
+            } catch (SQLException rollbackEx) {
+                System.err.println("Error al hacer rollback: " + rollbackEx.getMessage());
+            }
+
+        } finally {
+            // Cerrar los recursos
+            try {
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                System.err.println("Error al cerrar recursos: " + e.getMessage());
+            }
+        }
+
+        return eliminado;
+    }
+
+
+            // Método auxiliar para obtener la fecha de una excursión asociada a una inscripción específica
     private Date obtenerFechaExcursion(String idExcursion) {
         String query = "SELECT fecha FROM Excursiones WHERE idExcursion = ?";
         try (Connection connection = DatabaseConnection.getConnection();

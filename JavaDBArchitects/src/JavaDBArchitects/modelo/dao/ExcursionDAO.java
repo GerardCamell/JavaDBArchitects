@@ -79,6 +79,7 @@ public class ExcursionDAO {
             }
         }
     }
+
     //Sin transacción
     /* public static void registrarExcursionPA(String idExcursion, String descripcion, LocalDate fecha, int numDias, float precioInscripcion) {
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/producto3", "root", "Gecabo13bcn24021")) {
