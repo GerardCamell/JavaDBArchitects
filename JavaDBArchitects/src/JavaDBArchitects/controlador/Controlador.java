@@ -132,6 +132,11 @@ public class Controlador {
 
 
 
+
+
+
+
+
     // Método para eliminar una inscripción
     public static void eliminarInscripcion(String numeroInscripcion) {
         try {

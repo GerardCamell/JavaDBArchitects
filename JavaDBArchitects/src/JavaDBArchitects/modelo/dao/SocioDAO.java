@@ -81,9 +81,52 @@ public class SocioDAO {
         }
     }
 
-
     //Metodo registrarSocio mediante procedimiento almacenado
 
+    public static void registrarSocioPA(String nombre, int tipoSocio, String nif, int idFederacion, Integer idSocioPadre, Object extra) {
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/producto3", "root", "Gecabo13bcn24021")) {
+            // Desactivamos el auto-commit para iniciar la transacción
+            conn.setAutoCommit(false);
+
+            String sql = "{CALL registrarSocio(?, ?, ?, ?, ?, ?)}";
+            try (CallableStatement stmt = conn.prepareCall(sql)) {
+                // Establecemos los parámetros de entrada del procedimiento almacenado
+                stmt.setString(1, nombre);
+                stmt.setString(2, obtenerTipoSocio(tipoSocio));
+                stmt.setString(3, nif);
+                stmt.setInt(4, idFederacion);
+                stmt.setObject(5, idSocioPadre);
+                stmt.setString(6, obtenerTipoSeguro(extra));
+
+                // Ejecutar el procedimiento
+                stmt.executeUpdate();
+
+                // Confirmamos la transacción
+                conn.commit();
+                System.out.println("Socio registrado correctamente.");
+            } catch (SQLException e) {
+                // Si hay un error, revertimos la transacción
+                if (conn != null) {
+                    try {
+                        conn.rollback();
+                        System.err.println("Transacción revertida. Error al ejecutar el procedimiento: " + e.getMessage());
+                    } catch (SQLException rollbackEx) {
+                        System.err.println("Error al hacer rollback: " + rollbackEx.getMessage());
+                    }
+                }
+            } finally {
+                // Restauramos el auto-commit
+                if (conn != null) {
+                    conn.setAutoCommit(true);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error de conexión: " + e.getMessage());
+        }
+    }
+
+
+/* //Sin transacción
     public static void registrarSocioPA(String nombre, int tipoSocio, String nif, int idFederacion, Integer idSocioPadre, Object extra) {
         // Aquí realizas la llamada al procedimiento almacenado en MySQL
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/producto3", "root", "Gecabo13bcn24021")) {
@@ -107,6 +150,8 @@ public class SocioDAO {
             System.err.println("Error de conexión: " + e.getMessage());
         }
     }
+
+    */
 
     private static String obtenerTipoSocio(int tipoSocio) {
         // Mapear el valor numérico a una cadena ENUM de tipoSocio
@@ -174,6 +219,34 @@ public class SocioDAO {
         }
         return false;
     }
+
+    //Metodo para eliminar socio mediante procedimiento almacenado
+
+    public static void eliminarSocioPA(int idSocio) {
+        String url = "jdbc:mysql://127.0.0.1:3306/producto3";
+        String usuario = "root";
+        String contraseña = "Gecabo13bcn24021";
+
+        try (Connection conn = DriverManager.getConnection(url, usuario, contraseña)) {
+            conn.setAutoCommit(false);  // Iniciar transacción
+
+            String sql = "{CALL eliminarSocio(?)}";
+
+            try (CallableStatement stmt = conn.prepareCall(sql)) {
+                stmt.setInt(1, idSocio);  // Configurar el parámetro idSocio
+
+                stmt.executeUpdate();  // Ejecutar el procedimiento
+                conn.commit();  // Confirmar la transacción
+                System.out.println("Socio eliminado correctamente.");
+            } catch (SQLException e) {
+                System.err.println("Error al eliminar el socio: " + e.getMessage());
+                conn.rollback();  // Revertir la transacción en caso de error
+            }
+        } catch (SQLException e) {
+            System.err.println("Error de conexión a la base de datos: " + e.getMessage());
+        }
+    }
+
 
     // Método para verificar si un socio tiene inscripciones activas
     public boolean socioTieneInscripciones(int numeroSocio) {

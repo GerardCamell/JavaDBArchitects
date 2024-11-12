@@ -6,16 +6,10 @@ import JavaDBArchitects.modelo.Excursion;
 import JavaDBArchitects.modelo.conexion.DatabaseConnection;
 import JavaDBArchitects.controlador.excepciones.*;
 
+import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-
-import java.sql.Date;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 
 public class InscripcionDAO {
 
@@ -79,8 +73,49 @@ public class InscripcionDAO {
         }
     }
 
+    //Metodo para inscribir en una excursion mediante procedimiento almacenado
 
+    public static void inscribirEnExcursionPA(int idSocio, String idExcursion, LocalDate fechaInscripcion) {
+        String url = "jdbc:mysql://127.0.0.1:3306/producto3";
+        String usuario = "root";
+        String contraseña = "Gecabo13bcn24021";
 
+        // Convertimos LocalDate a SQL Date para la base de datos
+        java.sql.Date fechaSQL = java.sql.Date.valueOf(fechaInscripcion);
+
+        // Iniciamos la conexión y la transacción
+        try (Connection conn = DriverManager.getConnection(url, usuario, contraseña)) {
+            // Iniciar la transacción
+            conn.setAutoCommit(false);
+
+            String sql = "{CALL inscribirEnExcursion(?, ?, ?)}";
+
+            try (CallableStatement stmt = conn.prepareCall(sql)) {
+                // Configurar los parámetros de entrada para el procedimiento almacenado
+                stmt.setInt(1, idSocio);
+                stmt.setString(2, idExcursion);
+                stmt.setDate(3, fechaSQL);
+
+                // Ejecutar el procedimiento
+                stmt.executeUpdate();
+                System.out.println("Inscripción registrada correctamente.");
+
+                // Confirmar la transacción si no hubo errores
+                conn.commit();
+            } catch (SQLException e) {
+                System.err.println("Error al inscribir en la excursión: " + e.getMessage());
+                try {
+                    // En caso de error, revertimos la transacción
+                    conn.rollback();
+                    System.out.println("La transacción se ha revertido debido a un error.");
+                } catch (SQLException rollbackEx) {
+                    System.err.println("Error al revertir la transacción: " + rollbackEx.getMessage());
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error de conexión a la base de datos: " + e.getMessage());
+        }
+    }
 
 
     // Método para obtener inscripciones de un socio específico

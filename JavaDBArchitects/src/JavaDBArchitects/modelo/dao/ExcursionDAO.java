@@ -32,7 +32,55 @@ public class ExcursionDAO {
 
     //Metodo para regitsrar excursion mediante procedimiento almacenado
 
-public static void registrarExcursionPA(String idExcursion, String descripcion, LocalDate fecha, int numDias, float precioInscripcion) {
+    public static void registrarExcursionPA(String idExcursion, String descripcion, LocalDate fecha, int numDias, float precioInscripcion) {
+        Connection conn = null;
+        CallableStatement stmt = null;
+
+        try {
+            conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/producto3", "root", "Gecabo13bcn24021");
+            conn.setAutoCommit(false);  // Inicia la transacción
+
+            String sql = "{CALL registrarExcursion(?, ?, ?, ?, ?)}";
+            stmt = conn.prepareCall(sql);
+
+            // Establecer los parámetros del procedimiento
+            stmt.setString(1, idExcursion);
+            stmt.setString(2, descripcion);
+            stmt.setDate(3, Date.valueOf(fecha));  // Convertir LocalDate a java.sql.Date
+            stmt.setInt(4, numDias);
+            stmt.setFloat(5, precioInscripcion);
+
+            // Ejecutar el procedimiento
+            stmt.executeUpdate();
+
+            conn.commit();  // Confirma la transacción
+            System.out.println("Excursión registrada correctamente.");
+
+        } catch (SQLException e) {
+            System.err.println("Error al ejecutar el procedimiento: " + e.getMessage());
+            if (conn != null) {
+                try {
+                    conn.rollback();  // Revertir la transacción en caso de error
+                    System.out.println("Transacción revertida.");
+                } catch (SQLException rollbackEx) {
+                    System.err.println("Error al revertir la transacción: " + rollbackEx.getMessage());
+                }
+            }
+        } finally {
+            // Cerrar recursos
+            try {
+                if (stmt != null) stmt.close();
+                if (conn != null) {
+                    conn.setAutoCommit(true);  // Restaurar el auto-commit
+                    conn.close();
+                }
+            } catch (SQLException closeEx) {
+                System.err.println("Error al cerrar la conexión: " + closeEx.getMessage());
+            }
+        }
+    }
+    //Sin transacción
+    /* public static void registrarExcursionPA(String idExcursion, String descripcion, LocalDate fecha, int numDias, float precioInscripcion) {
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/producto3", "root", "Gecabo13bcn24021")) {
             String sql = "{CALL registrarExcursion(?, ?, ?, ?, ?)}";
             try (CallableStatement stmt = conn.prepareCall(sql)) {
@@ -53,7 +101,8 @@ public static void registrarExcursionPA(String idExcursion, String descripcion, 
         } catch (SQLException e) {
             System.err.println("Error de conexión a la base de datos: " + e.getMessage());
         }
-    }
+    } */
+
 
 
     // Método para verificar si una excursión existe según su código
