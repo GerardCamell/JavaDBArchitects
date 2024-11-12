@@ -6,6 +6,10 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 import JavaDBArchitects.controlador.excepciones.ExcursionYaExisteException;
+import java.math.BigDecimal;
+import JavaDBArchitects.controlador.excepciones.SocioYaExisteException;
+import JavaDBArchitects.controlador.excepciones.TipoSocioInvalidoException;
+
 
 public class MenuPrincipal {
 
@@ -70,6 +74,7 @@ public class MenuPrincipal {
         String NIF = scanner.nextLine();
 
         Object extra = null;
+
         if (tipoSocio == 0) {  // Estandar
             System.out.print("Tipo de Seguro (BASICO o COMPLETO): ");
             String tipoSeguroInput = scanner.nextLine().toUpperCase().trim();
@@ -85,25 +90,32 @@ public class MenuPrincipal {
             }
 
             float precioSeguro = tipoSeguro == TipoSeguro.BASICO ? 50.0f : 100.0f;
-            extra = new Seguro(tipoSeguro, precioSeguro); // El seguro se crea correctamente y se asigna
+            extra = new Seguro(tipoSeguro, precioSeguro);
 
-
-    } else if (tipoSocio == 1) {  // Federado
+        } else if (tipoSocio == 1) {  // Federado
             System.out.print("ID de la Federación: ");
             int idFederacion = scanner.nextInt();
             scanner.nextLine();  // Capturar la línea vacía
             System.out.print("Nombre de la Federación: ");
             String nombreFederacion = scanner.nextLine();
             extra = new Federacion(idFederacion, nombreFederacion);
+
+        } else if (tipoSocio == 2) {  // Infantil
+            System.out.print("Número de Socio del Padre o Madre: ");
+            int numSocioPadreOMadre = scanner.nextInt();
+            extra = numSocioPadreOMadre;
+        } else {
+            System.out.println("Error: Tipo de socio no válido. Debe ser 0 (Estandar), 1 (Federado) o 2 (Infantil).");
+            return;
         }
 
-        Controlador.registrarSocio(numeroSocio, nombre, tipoSocio, NIF, extra);
+        try {
+            Controlador.registrarSocio(numeroSocio, nombre, tipoSocio, NIF, extra, null);
+            System.out.println("Socio registrado con éxito.");
+        } catch (Exception e) {
+            System.out.println("Error desconocido: " + e.getMessage());
+        }
     }
-
-
-
-
-
 
 
 

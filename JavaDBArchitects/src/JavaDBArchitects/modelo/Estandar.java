@@ -1,19 +1,21 @@
 package JavaDBArchitects.modelo;
 
+import java.math.BigDecimal;
+
 public class Estandar extends Socio {
 
     private String NIF;
     private Seguro seguro;
 
-    public Estandar(int numeroSocio, String nombre, String NIF, Seguro seguro) {
-        super(numeroSocio, nombre, "ESTANDAR", NIF, null, null, null);
+    public Estandar(int numeroSocio, String nombre, String NIF, Seguro seguro, BigDecimal cuotaMensual) {
+        super(numeroSocio, nombre, "ESTANDAR", NIF, seguro != null ? seguro.getTipo() : null, null, null, cuotaMensual);
         this.NIF = NIF;
         this.seguro = seguro;
     }
 
     @Override
     public double calcularCuotaMensual() {
-        return 0;
+        return getCuotaMensual().doubleValue();
     }
 
     public String getNIF() {
@@ -23,9 +25,11 @@ public class Estandar extends Socio {
     public void setNIF(String NIF) {
         this.NIF = NIF;
     }
+
     public TipoSeguro getTipoSeguro() {
         return seguro != null ? seguro.getTipo() : null;
     }
+
     public Seguro getSeguro() {
         return seguro;
     }
@@ -40,6 +44,7 @@ public class Estandar extends Socio {
                 "Número de Socio: " + getNumeroSocio() + "\n" +
                 "Nombre: '" + getNombre() + "'\n" +
                 "NIF: '" + getNIF() + "'\n" +
-                "Seguro: " + seguro + "\n";
+                "Seguro: " + seguro + "\n" +
+                "Cuota Mensual: " + getCuotaMensual() + "€\n";
     }
 }

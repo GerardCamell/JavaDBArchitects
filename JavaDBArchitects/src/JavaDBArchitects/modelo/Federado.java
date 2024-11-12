@@ -1,19 +1,21 @@
 package JavaDBArchitects.modelo;
 
+import java.math.BigDecimal;
+
 public class Federado extends Socio {
 
     private String NIF;
     private Federacion federacion;
 
-    public Federado(int numeroSocio, String nombre, String NIF, Federacion federacion) {
-        super(numeroSocio, nombre, "FEDERADO", NIF, null, federacion != null ? federacion.getId_federacion() : null, null);
+    public Federado(int numeroSocio, String nombre, String NIF, Federacion federacion, BigDecimal cuotaMensual) {
+        super(numeroSocio, nombre, "FEDERADO", NIF, null, federacion != null ? federacion.getId_federacion() : null, null, cuotaMensual);
         this.NIF = NIF;
         this.federacion = federacion;
     }
 
     @Override
     public double calcularCuotaMensual() {
-        return 0;
+        return getCuotaMensual().doubleValue();
     }
 
     public String getNIF() {
@@ -38,7 +40,9 @@ public class Federado extends Socio {
                         "Número de Socio: %d\n" +
                         "Nombre: '%s'\n" +
                         "NIF: '%s'\n" +
-                        "%s\n",
-                getNumeroSocio(), getNombre(), NIF, federacion.toString());
+                        "%s\n" +
+                        "Cuota Mensual: %s€\n",
+                getNumeroSocio(), getNombre(), NIF, federacion.toString(), getCuotaMensual());
     }
 }
+

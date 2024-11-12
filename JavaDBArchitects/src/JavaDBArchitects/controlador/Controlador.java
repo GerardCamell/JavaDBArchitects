@@ -10,6 +10,8 @@ import java.sql.Date;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.math.BigDecimal;
+
 
 public class Controlador {
     private static final DateTimeFormatter FORMATO_FECHA = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -26,19 +28,20 @@ public class Controlador {
         MenuPrincipal.mostrarMenu();    // Llama al menú principal después de la inicialización
     }
 
-    public static void registrarSocio(int numeroSocio, String nombre, int tipoSocio, String NIF, Object extra) {
+
+    public static void registrarSocio(int numeroSocio, String nombre, int tipoSocio, String NIF, Object extra, BigDecimal cuotaMensual) {
         try {
             Socio socio;
             if (tipoSocio == 0) { // Estandar
                 if (extra instanceof Seguro) {
-                    socio = new Estandar(numeroSocio, nombre, NIF, (Seguro) extra);
+                    socio = new Estandar(numeroSocio, nombre, NIF, (Seguro) extra, cuotaMensual);
                 } else {
                     throw new IllegalArgumentException("Error: El socio estándar debe tener un seguro válido.");
                 }
             } else if (tipoSocio == 1) { // Federado
-                socio = new Federado(numeroSocio, nombre, NIF, (Federacion) extra);
+                socio = new Federado(numeroSocio, nombre, NIF, (Federacion) extra, cuotaMensual);
             } else if (tipoSocio == 2) { // Infantil
-                socio = new Infantil(numeroSocio, nombre, (Integer) extra);
+                socio = new Infantil(numeroSocio, nombre, (Integer) extra, cuotaMensual);
             } else {
                 throw new TipoSocioInvalidoException("Tipo de socio no válido");
             }
@@ -50,6 +53,7 @@ public class Controlador {
             MenuPrincipal.mostrarError("Error: El tipo de socio proporcionado no es válido.");
         }
     }
+
 
 
 
@@ -219,7 +223,6 @@ public class Controlador {
         }
     }
 
-    // Método para consultar la factura mensual de un socio
     public static void consultarFacturaMensual(int numeroSocio) {
         Socio socio = socioDAO.getSocioByNumero(numeroSocio);
 
@@ -228,45 +231,32 @@ public class Controlador {
             return;
         }
 
-        // Cuota base mensual del centro
-        float cuotaBase = 10.0f;
-        float cuotaMensual = cuotaBase;
+        // Obtener la cuota mensual calculada desde la base de datos
+        BigDecimal cuotaMensual = socio.getCuotaMensual();  // Este valor ya incluye el descuento y el precio del seguro, si corresponde.
 
-        // Aplicar descuento en la cuota mensual según el tipo de socio
-        if (socio instanceof Infantil) {
-            cuotaMensual *= 0.5f; // 50% de descuento para socios infantiles
-        } else if (socio instanceof Federado) {
-            cuotaMensual *= 0.95f; // 5% de descuento para socios federados
-        }
-
-        // Empezar el total de la factura con la cuota mensual calculada
-        float totalFactura = cuotaMensual;
+        // Inicializar el total de la factura con la cuota mensual calculada
+        BigDecimal totalFactura = cuotaMensual != null ? cuotaMensual : BigDecimal.ZERO;
 
         // Obtener todas las inscripciones del socio para calcular el total de excursiones
         List<Inscripcion> inscripciones = inscripcionDAO.getInscripcionesBySocio(numeroSocio);
 
         // Sumar el precio de cada excursión, aplicando los cargos o descuentos según el tipo de socio
         for (Inscripcion inscripcion : inscripciones) {
-            float precioExcursion = inscripcion.getExcursion().getPrecioInscripcion();
+            BigDecimal precioExcursion = BigDecimal.valueOf(inscripcion.getExcursion().getPrecioInscripcion());
 
-            if (socio instanceof Estandar) {
-                // Para los socios estándar, se añade el precio de la excursión más el costo del seguro
-                Seguro seguro = ((Estandar) socio).getSeguro();
-                totalFactura += precioExcursion + seguro.getPrecio();
-
-            } else if (socio instanceof Federado) {
+            if (socio instanceof Federado) {
                 // Para los federados, se aplica un 10% de descuento en el precio de la excursión
-                totalFactura += precioExcursion * 0.9f;
-
-            } else if (socio instanceof Infantil) {
-                // Para los infantiles, se añade solo el precio de la excursión sin descuento adicional
-                totalFactura += precioExcursion;
+                totalFactura = totalFactura.add(precioExcursion.multiply(BigDecimal.valueOf(0.9)));
+            } else {
+                // Para los socios estándar e infantiles, se añade el precio de la excursión sin descuento adicional
+                totalFactura = totalFactura.add(precioExcursion);
             }
         }
 
         // Mostrar el total calculado de la factura mensual
         MenuPrincipal.mostrarMensaje("Factura mensual para el socio " + numeroSocio + ": " + totalFactura + "€");
     }
+
 
 
     // Método para mostrar excursiones entre dos fechas
