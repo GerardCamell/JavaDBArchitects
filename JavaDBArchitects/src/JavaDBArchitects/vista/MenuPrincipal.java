@@ -51,7 +51,7 @@ public class MenuPrincipal {
                 case 4 -> listarExcursionesPorFechaPAMenu();
                 case 5 -> listarInscripcionesPA();
                 case 6 -> consultarFacturaMensual();
-                case 7 -> modificarDatosSocio();
+                case 7 -> modificarDatosSocioPAMenu();
                 case 8 -> mostrarSociosPorTipo();
                 case 9 -> eliminarInscripcionPAMenu();
                 case 10 -> eliminarSocioPAMenu();
@@ -233,6 +233,17 @@ public class MenuPrincipal {
         Controlador.modificarDatosSocio(numeroSocio, nuevoNombre);
     }
 
+    private static void modificarDatosSocioPAMenu() {
+        System.out.println("=== Modificar Datos del Socio ===");
+        System.out.print("Número de Socio: ");
+        int numeroSocio = scanner.nextInt();
+        scanner.nextLine();
+        System.out.print("Nuevo nombre del socio: ");
+        String nuevoNombre = scanner.nextLine();
+
+        SocioDAO.modificarDatosSocioPA(numeroSocio, nuevoNombre);
+    }
+
     private static void listarInscripciones() {
         System.out.println("=== Listar Inscripciones ===");
         Controlador.listarInscripciones();
@@ -324,6 +335,15 @@ public class MenuPrincipal {
         Controlador.listarSocios(tipoSocio);
     }
 
+    private static void mostrarSociosPorTipoPAMenu() {
+        System.out.println("=== Mostrar Socios por Tipo ===");
+        System.out.print("Tipo de Socio (0: Estandar, 1: Federado, 2: Infantil): ");
+        int tipoSocio = scanner.nextInt();
+        scanner.nextLine();  // Capturar la línea vacía
+
+        SocioDAO.listarSociosPorTipoPA(tipoSocio);
+    }
+
     private static void mostrarInscripcionesConFiltros() {
         System.out.println("=== Mostrar Inscripciones con Filtros ===");
 
@@ -375,8 +395,10 @@ public class MenuPrincipal {
         System.out.print("Fecha de Fin (YYYY-MM-DD): ");
         String fechaFin = scanner.nextLine();
 
-        ExcursionDAO.listarExcursionesPorFecha(fechaInicio, fechaFin);
+        ExcursionDAO.listarExcursionesPorFechaPA(fechaInicio, fechaFin);
     }
+
+
 
     public static void mostrarMensaje(String mensaje) {
         System.out.println(mensaje);

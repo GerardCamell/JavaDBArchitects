@@ -11,6 +11,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import static JavaDBArchitects.modelo.conexion.DatabaseConnection.getConnection;
+
 public class InscripcionDAO {
 
     public void addInscripcion(Inscripcion inscripcion) throws InscripcionYaExisteException, FechaInvalidaException {
@@ -37,7 +39,7 @@ public class InscripcionDAO {
         System.out.println("Validación de fecha de inscripción superada. Procediendo a insertar inscripción.");
 
         String query = "INSERT INTO Inscripciones (id_socio, id_excursion, fecha_inscripcion) VALUES (?, ?, ?)";
-        try (Connection connection = DatabaseConnection.getConnection()) {
+        try (Connection connection = getConnection()) {
             // Iniciar la transacción
             connection.setAutoCommit(false);
 
@@ -73,7 +75,7 @@ public class InscripcionDAO {
         }
     }
 
-    //Metodo para inscribir en una excursion mediante procedimiento almacenado
+    //Metodo para inscribir en una excursion mediante procedimiento almacenado (Transacción)
 
     public static void inscribirEnExcursionPA(int idSocio, String idExcursion, LocalDate fechaInscripcion) {
         String url = "jdbc:mysql://127.0.0.1:3306/producto3";
@@ -123,7 +125,7 @@ public class InscripcionDAO {
         List<Inscripcion> inscripciones = new ArrayList<>();
         String query = "SELECT * FROM Inscripciones WHERE id_socio = ?";
 
-        try (Connection connection = DatabaseConnection.getConnection();
+        try (Connection connection = getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
             preparedStatement.setInt(1, numeroSocio);
@@ -154,7 +156,7 @@ public class InscripcionDAO {
         String query = "SELECT * FROM Inscripciones WHERE id_inscripcion = ?";
         Inscripcion inscripcion = null;
 
-        try (Connection connection = DatabaseConnection.getConnection();
+        try (Connection connection = getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
             preparedStatement.setString(1, numInscripcion);
@@ -181,7 +183,7 @@ public class InscripcionDAO {
 
     public boolean socioTieneInscripciones(int numeroSocio) {
         String query = "SELECT COUNT(*) FROM Inscripciones WHERE id_socio = ?";
-        try (Connection connection = DatabaseConnection.getConnection();
+        try (Connection connection = getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
             preparedStatement.setInt(1, numeroSocio);
@@ -199,7 +201,7 @@ public class InscripcionDAO {
         List<Inscripcion> inscripciones = new ArrayList<>();
         String query = "SELECT * FROM Inscripciones";
 
-        try (Connection connection = DatabaseConnection.getConnection();
+        try (Connection connection = getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -225,7 +227,7 @@ public class InscripcionDAO {
 
     public boolean excursionTieneInscripciones(Excursion excursion) {
         String query = "SELECT COUNT(*) FROM Inscripciones WHERE id_excursion = ?";
-        try (Connection connection = DatabaseConnection.getConnection();
+        try (Connection connection = getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
             preparedStatement.setString(1, excursion.getIdExcursion());
@@ -242,7 +244,7 @@ public class InscripcionDAO {
     // Método para eliminar una inscripción por su número de inscripción
     public boolean eliminarInscripcion(String numInscripcion) throws InscripcionNoExisteException, CancelacionInvalidaException {
         String query = "DELETE FROM Inscripciones WHERE id_inscripcion = ?";
-        try (Connection connection = DatabaseConnection.getConnection();
+        try (Connection connection = getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
             // Obtener la fecha de la excursión asociada a esta inscripción
@@ -267,7 +269,7 @@ public class InscripcionDAO {
         return false;
     }
 
-    //Metodo para eliminar una inscripción mediante procedimiento almacenado
+    //Metodo para eliminar una inscripción mediante procedimiento almacenado (Transacción)
 
     public static boolean eliminarInscripcionPA(int idInscripcion) {
 
@@ -373,12 +375,10 @@ public class InscripcionDAO {
 
 
 
-
-
             // Método auxiliar para obtener la fecha de una excursión asociada a una inscripción específica
     private Date obtenerFechaExcursion(String idExcursion) {
         String query = "SELECT fecha FROM Excursiones WHERE idExcursion = ?";
-        try (Connection connection = DatabaseConnection.getConnection();
+        try (Connection connection = getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
             preparedStatement.setString(1, idExcursion);
@@ -399,7 +399,7 @@ public class InscripcionDAO {
     // Método para generar un número único de inscripción basado en el valor máximo de la tabla
     public int generarNumeroInscripcion() {
         String query = "SELECT MAX(CAST(id_inscripcion AS UNSIGNED)) FROM Inscripciones";
-        try (Connection connection = DatabaseConnection.getConnection();
+        try (Connection connection = getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -413,7 +413,7 @@ public class InscripcionDAO {
     }
     public boolean inscripcionExiste(int numeroSocio, String idExcursion) {
         String query = "SELECT COUNT(*) FROM Inscripciones WHERE id_socio = ? AND id_excursion = ?";
-        try (Connection connection = DatabaseConnection.getConnection();
+        try (Connection connection = getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
             preparedStatement.setInt(1, numeroSocio);
