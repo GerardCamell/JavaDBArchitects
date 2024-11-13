@@ -191,6 +191,56 @@ public class ExcursionDAO {
         }
     }
 
+    //Metodo para eliminar excursion mediante procedimiento almacenado
+
+    public static boolean eliminarExcursionPA(String idExcursion) {
+        Connection conn = null;
+        CallableStatement stmt = null;
+        boolean eliminado = false;
+
+        try {
+            conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/producto3", "root", "Gecabo13bcn24021");
+            conn.setAutoCommit(false);  // Iniciar transacción
+
+            String sql = "{CALL eliminarExcursion(?)}";
+            stmt = conn.prepareCall(sql);
+
+            // Configurar el parámetro de entrada del procedimiento
+            stmt.setString(1, idExcursion);
+
+            // Ejecutar el procedimiento
+            int rowsAffected = stmt.executeUpdate();
+
+            // Confirmar la transacción si se afectaron filas
+            if (rowsAffected > 0) {
+                conn.commit();
+                eliminado = true;
+                System.out.println("Excursión eliminada correctamente.");
+            } else {
+                System.out.println("No se encontró ninguna excursión con el ID proporcionado.");
+                conn.rollback();
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error al eliminar excursión: " + e.getMessage());
+            try {
+                if (conn != null) conn.rollback();  // Deshacer cambios en caso de error
+            } catch (SQLException rollbackEx) {
+                System.err.println("Error al hacer rollback: " + rollbackEx.getMessage());
+            }
+
+        } finally {
+            try {
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                System.err.println("Error al cerrar recursos: " + e.getMessage());
+            }
+        }
+
+        return eliminado;
+    }
+
     // Método en ExcursionDAO para obtener excursiones entre dos fechas
     public List<Excursion> getExcursionesEntreFechas(LocalDate fechaInicio, LocalDate fechaFin) {
         List<Excursion> excursiones = new ArrayList<>();
@@ -218,6 +268,59 @@ public class ExcursionDAO {
 
         return excursiones;
     }
+
+
+    //Metodo para listar excursiones por fecha mediante procedimiento almacenado
+
+    public static void listarExcursionesPorFecha(String fechaInicio, String fechaFin) {
+        Connection conn = null;
+        CallableStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/producto3", "root", "Gecabo13bcn24021");
+
+            String sql = "{CALL listarExcursionesPorFechas(?, ?)}";
+            stmt = conn.prepareCall(sql);
+
+            // Configurar los parámetros de entrada del procedimiento
+            stmt.setString(1, fechaInicio);
+            stmt.setString(2, fechaFin);
+
+            // Ejecutar el procedimiento y obtener el resultado
+            rs = stmt.executeQuery();
+
+            // Procesar el resultado
+            while (rs.next()) {
+                String idExcursion = rs.getString("idExcursion");
+                String descripcion = rs.getString("descripcion");
+                String fecha = rs.getDate("fecha").toString();
+                int numDias = rs.getInt("num_dias");
+                double precio = rs.getDouble("precio");
+
+                System.out.println("ID Excursión: " + idExcursion);
+                System.out.println("Descripción: " + descripcion);
+                System.out.println("Fecha: " + fecha);
+                System.out.println("Número de Días: " + numDias);
+                System.out.println("Precio: $" + precio);
+                System.out.println("------------------------------------");
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error al listar excursiones: " + e.getMessage());
+        } finally {
+            // Cerrar los recursos
+            try {
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                System.err.println("Error al cerrar recursos: " + e.getMessage());
+            }
+        }
+    }
+
+
 
     public List<Excursion> getAllExcursiones() {
         List<Excursion> excursiones = new ArrayList<>();

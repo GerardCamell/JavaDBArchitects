@@ -12,6 +12,7 @@ import JavaDBArchitects.controlador.excepciones.TipoSocioInvalidoException;
 import JavaDBArchitects.modelo.dao.ExcursionDAO;
 import JavaDBArchitects.modelo.dao.InscripcionDAO;
 import JavaDBArchitects.modelo.dao.SocioDAO;
+import static JavaDBArchitects.modelo.dao.InscripcionDAO.listarInscripcionesPA;
 
 
 public class MenuPrincipal {
@@ -47,15 +48,15 @@ public class MenuPrincipal {
                 case 1 -> registrarExcursionPAMenu();
                 case 2 -> registrarSocioPAMenu();
                 case 3 -> inscribirEnExcursionPAMenu();
-                case 4 -> listarExcursionesPorFechas();
-                case 5 -> listarInscripciones();
+                case 4 -> listarExcursionesPorFechaPAMenu();
+                case 5 -> listarInscripcionesPA();
                 case 6 -> consultarFacturaMensual();
                 case 7 -> modificarDatosSocio();
                 case 8 -> mostrarSociosPorTipo();
                 case 9 -> eliminarInscripcionPAMenu();
                 case 10 -> eliminarSocioPAMenu();
                 case 11 -> mostrarInscripcionesConFiltros();
-                case 12 -> eliminarExcursion();
+                case 12 -> eliminarExcursionPAMenu();
                 case 0 -> System.out.println("Saliendo del sistema...");
                 default -> System.out.println("Opción no válida. Inténtalo de nuevo.");
             }
@@ -352,6 +353,29 @@ public class MenuPrincipal {
         } else {
             mostrarMensaje("No se pudo eliminar la excursión.");
         }
+    }
+
+    private static void eliminarExcursionPAMenu() {
+        System.out.println("=== Eliminar Excursión ===");
+        System.out.print("ID de la Excursión: ");
+        String idExcursion = scanner.nextLine();
+
+        boolean exito = ExcursionDAO.eliminarExcursionPA(idExcursion);
+        if (exito) {
+            System.out.println("Excursión eliminada con éxito.");
+        } else {
+            System.out.println("No se encontró la excursión o ocurrió un error.");
+        }
+    }
+
+    private static void listarExcursionesPorFechaPAMenu() {
+        System.out.println("=== Listar Excursiones por Fecha ===");
+        System.out.print("Fecha de Inicio (YYYY-MM-DD): ");
+        String fechaInicio = scanner.nextLine();
+        System.out.print("Fecha de Fin (YYYY-MM-DD): ");
+        String fechaFin = scanner.nextLine();
+
+        ExcursionDAO.listarExcursionesPorFecha(fechaInicio, fechaFin);
     }
 
     public static void mostrarMensaje(String mensaje) {

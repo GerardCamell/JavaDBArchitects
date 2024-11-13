@@ -325,6 +325,55 @@ public class InscripcionDAO {
         return eliminado;
     }
 
+    //Metodo para listar inscripciones mediante procedimiento almacenado
+
+    public static void listarInscripcionesPA() {
+        Connection conn = null;
+        CallableStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/producto3", "root", "Gecabo13bcn24021");
+
+            String sql = "{CALL listarInscripciones()}";
+            stmt = conn.prepareCall(sql);
+
+            // Ejecutar el procedimiento almacenado y obtener el resultado
+            rs = stmt.executeQuery();
+
+            // Procesar el resultado
+            while (rs.next()) {
+                int idInscripcion = rs.getInt("id_inscripcion");
+                int idSocio = rs.getInt("id_socio");
+                String nombreSocio = rs.getString("nombre_socio");
+                String idExcursion = rs.getString("id_excursion");
+                String descripcionExcursion = rs.getString("descripcion_excursion");
+                String fechaInscripcion = rs.getDate("fecha_inscripcion").toString();
+
+                System.out.println("ID Inscripción: " + idInscripcion);
+                System.out.println("ID Socio: " + idSocio + " - Nombre Socio: " + nombreSocio);
+                System.out.println("ID Excursión: " + idExcursion + " - Descripción Excursión: " + descripcionExcursion);
+                System.out.println("Fecha Inscripción: " + fechaInscripcion);
+                System.out.println("------------------------------------");
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error al listar inscripciones: " + e.getMessage());
+        } finally {
+            // Cerrar los recursos
+            try {
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                System.err.println("Error al cerrar recursos: " + e.getMessage());
+            }
+        }
+    }
+
+
+
+
 
             // Método auxiliar para obtener la fecha de una excursión asociada a una inscripción específica
     private Date obtenerFechaExcursion(String idExcursion) {
