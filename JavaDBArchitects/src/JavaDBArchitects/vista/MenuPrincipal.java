@@ -12,7 +12,7 @@ import JavaDBArchitects.controlador.excepciones.TipoSocioInvalidoException;
 import JavaDBArchitects.modelo.dao.ExcursionDAO;
 import JavaDBArchitects.modelo.dao.InscripcionDAO;
 import JavaDBArchitects.modelo.dao.SocioDAO;
-import static JavaDBArchitects.modelo.dao.InscripcionDAO.listarInscripcionesPA;
+
 
 
 public class MenuPrincipal {
@@ -49,10 +49,10 @@ public class MenuPrincipal {
                 case 2 -> registrarSocioPAMenu();
                 case 3 -> inscribirEnExcursionPAMenu();
                 case 4 -> listarExcursionesPorFechaPAMenu();
-                case 5 -> listarInscripcionesPA();
+                case 5 -> listarInscripcionesPAMenu();
                 case 6 -> consultarFacturaMensual();
                 case 7 -> modificarDatosSocio();
-                case 8 -> mostrarSociosPorTipo();
+                case 8 -> mostrarSociosPorTipoPAMenu();
                 case 9 -> eliminarInscripcionPAMenu();
                 case 10 -> eliminarSocioPAMenu();
                 case 11 -> mostrarInscripcionesConFiltros();
@@ -102,12 +102,13 @@ public class MenuPrincipal {
             extra = new Federacion(idFederacion, nombreFederacion);
         }
 
-        // Llamamos al controlador que a su vez invocará el procedimiento almacenado para registrar el socio
-        SocioDAO.registrarSocioPA   (nombre, tipoSocio, NIF, idFederacion, idSocioPadre, extra);
+        // Llamada al método en el controlador
+        Controlador.registrarSocioPA(nombre, tipoSocio, NIF, idFederacion, idSocioPadre, extra);
     }
 
 
-    private static void registrarSocio() {
+
+    /*private static void registrarSocio() {
         System.out.println("=== Registrar Socio ===");
         System.out.print("Número de Socio: ");
         int numeroSocio = scanner.nextInt();
@@ -162,18 +163,18 @@ public class MenuPrincipal {
         } catch (Exception e) {
             System.out.println("Error desconocido: " + e.getMessage());
         }
-    }
+    }*/
 
 
 
-    private static void eliminarSocio() {
+    /*private static void eliminarSocio() {
         System.out.println("=== Eliminar Socio ===");
         System.out.print("Número de Socio: ");
         int numeroSocio = scanner.nextInt();
         scanner.nextLine();  // Capturar la línea vacía
 
         Controlador.eliminarSocio(numeroSocio);
-    }
+    }*/
 
     private static void eliminarSocioPAMenu() {
         System.out.println("=== Eliminar Socio ===");
@@ -181,22 +182,10 @@ public class MenuPrincipal {
         int numeroSocio = scanner.nextInt();
         scanner.nextLine();  // Capturar la línea vacía
 
-        SocioDAO.eliminarSocioPA(numeroSocio);
+        // Llamada al método en Controlador
+        Controlador.eliminarSocioPA(numeroSocio);
     }
 
-    private static void inscribirEnExcursion() {
-        System.out.println("=== Inscribir en Excursión ===");
-        System.out.print("Número de Socio: ");
-        int numeroSocio = scanner.nextInt();
-        scanner.nextLine();
-        System.out.print("Código de la Excursión: ");
-        String codigoExcursion = scanner.nextLine();
-        System.out.print("Fecha de Inscripción (DD/MM/YYYY): ");
-        String fechaStr = scanner.nextLine();
-
-        LocalDate fechaInscripcion = LocalDate.parse(fechaStr, formatter);
-        Controlador.inscribirEnExcursion(numeroSocio, codigoExcursion, fechaInscripcion);
-    }
 
     private static void inscribirEnExcursionPAMenu() {
         System.out.println("=== Inscribir en Excursión ===");
@@ -209,8 +198,11 @@ public class MenuPrincipal {
         String fechaStr = scanner.nextLine();
 
         LocalDate fechaInscripcion = LocalDate.parse(fechaStr, formatter);
-        InscripcionDAO.inscribirEnExcursionPA(numeroSocio, codigoExcursion, fechaInscripcion);
+
+        // Llamada al método en Controlador en lugar de InscripcionDAO
+        Controlador.inscribirEnExcursionPA(numeroSocio, codigoExcursion, fechaInscripcion);
     }
+
 
 
     private static void consultarFacturaMensual() {
@@ -233,50 +225,18 @@ public class MenuPrincipal {
         Controlador.modificarDatosSocio(numeroSocio, nuevoNombre);
     }
 
-    private static void listarInscripciones() {
+    /*private static void listarInscripciones() {
         System.out.println("=== Listar Inscripciones ===");
         Controlador.listarInscripciones();
-    }
-
-    private static void eliminarInscripcion() {
-        System.out.println("=== Eliminar Inscripción ===");
-        System.out.print("Número de Inscripción: ");
-        String numeroInscripcion = scanner.nextLine();
-
-        Controlador.eliminarInscripcion(numeroInscripcion);
-    }
+    }*/
 
     private static void eliminarInscripcionPAMenu() {
         System.out.println("=== Eliminar Inscripción ===");
         System.out.print("Número de Inscripción: ");
         int numeroInscripcion = Integer.parseInt(scanner.nextLine());
 
-        InscripcionDAO.eliminarInscripcionPA(numeroInscripcion);
-    }
-
-    private static void registrarExcursion() {
-        System.out.println("=== Registrar Excursión ===");
-        System.out.print("Código: ");
-        String codigo = scanner.nextLine();
-        System.out.print("Descripción: ");
-        String descripcion = scanner.nextLine();
-        System.out.print("Fecha (DD/MM/YYYY): ");
-        String fechaStr = scanner.nextLine();
-
-        LocalDate fecha = LocalDate.parse(fechaStr, formatter);
-
-        System.out.print("Número de Días: ");
-        int numeroDias = scanner.nextInt();
-        scanner.nextLine();  // Capturar la línea vacía
-        System.out.print("Precio: ");
-        float precio = scanner.nextFloat();
-        scanner.nextLine();  // Capturar la línea vacía
-
-        try {
-            Controlador.registrarExcursion(codigo, descripcion, fecha, numeroDias, precio);
-        } catch (ExcursionYaExisteException e) {
-            System.out.println("Error: La excursión ya existe.");
-        }
+        // Llamada al método en Controlador
+        Controlador.eliminarInscripcionPA(numeroInscripcion);
     }
 
     private static void registrarExcursionPAMenu() {
@@ -297,12 +257,21 @@ public class MenuPrincipal {
         float precio = scanner.nextFloat();
         scanner.nextLine();  // Capturar la línea vacía
 
-        ExcursionDAO.registrarExcursionPA(codigo, descripcion, fecha, numeroDias, precio);
+        // Ahora llamamos al controlador
+        Controlador.registrarExcursionPA(codigo, descripcion, fecha, numeroDias, precio);
+        System.out.println("Excursión registrada con éxito.");
     }
 
 
+    private static void listarInscripcionesPAMenu() {
+        System.out.println("=== Listar Inscripciones ===");
 
-    private static void listarExcursionesPorFechas() {
+        // Llamada al método en Controlador
+        Controlador.listarInscripcionesPA();
+    }
+
+
+    /*private static void listarExcursionesPorFechas() {
         System.out.println("=== Listar Excursiones por Fechas ===");
         System.out.print("Fecha Inicio (DD/MM/YYYY): ");
         String fechaInicioStr = scanner.nextLine();
@@ -313,9 +282,9 @@ public class MenuPrincipal {
         LocalDate fechaFin = LocalDate.parse(fechaFinStr, formatter);
 
         Controlador.mostrarExcursionesEntreFechas(fechaInicio, fechaFin);
-    }
+    }*/
 
-    private static void mostrarSociosPorTipo() {
+    private static void mostrarSociosPorTipoPAMenu() {
         System.out.println("=== Mostrar Socios por Tipo ===");
         System.out.print("Tipo de Socio (0: Estandar, 1: Federado, 2: Infantil): ");
         int tipoSocio = scanner.nextInt();
@@ -323,6 +292,7 @@ public class MenuPrincipal {
 
         Controlador.listarSocios(tipoSocio);
     }
+
 
     private static void mostrarInscripcionesConFiltros() {
         System.out.println("=== Mostrar Inscripciones con Filtros ===");
@@ -342,7 +312,7 @@ public class MenuPrincipal {
         Controlador.mostrarInscripcionesConFiltros(numeroSocio, fechaInicio, fechaFin);
     }
 
-    private static void eliminarExcursion() {
+    /*private static void eliminarExcursion() {
         System.out.println("=== Eliminar Excursión ===");
         System.out.print("Código de la Excursión: ");
         String codigoExcursion = scanner.nextLine();
@@ -354,13 +324,14 @@ public class MenuPrincipal {
             mostrarMensaje("No se pudo eliminar la excursión.");
         }
     }
-
+*/
     private static void eliminarExcursionPAMenu() {
         System.out.println("=== Eliminar Excursión ===");
         System.out.print("ID de la Excursión: ");
         String idExcursion = scanner.nextLine();
 
-        boolean exito = ExcursionDAO.eliminarExcursionPA(idExcursion);
+        // Llamar al método en Controlador
+        boolean exito = Controlador.eliminarExcursionPA(idExcursion);
         if (exito) {
             System.out.println("Excursión eliminada con éxito.");
         } else {
@@ -368,15 +339,27 @@ public class MenuPrincipal {
         }
     }
 
-    private static void listarExcursionesPorFechaPAMenu() {
-        System.out.println("=== Listar Excursiones por Fecha ===");
-        System.out.print("Fecha de Inicio (YYYY-MM-DD): ");
-        String fechaInicio = scanner.nextLine();
-        System.out.print("Fecha de Fin (YYYY-MM-DD): ");
-        String fechaFin = scanner.nextLine();
 
-        ExcursionDAO.listarExcursionesPorFecha(fechaInicio, fechaFin);
+
+
+    private static void listarExcursionesPorFechaPAMenu() {
+        System.out.println("=== Listar Excursiones por Fechas ===");
+        System.out.print("Fecha Inicio (DD/MM/YYYY): ");
+        String fechaInicioStr = scanner.nextLine();
+        System.out.print("Fecha Fin (DD/MM/YYYY): ");
+        String fechaFinStr = scanner.nextLine();
+
+        LocalDate fechaInicio = LocalDate.parse(fechaInicioStr, formatter);
+        LocalDate fechaFin = LocalDate.parse(fechaFinStr, formatter);
+
+        // Convertimos las fechas a formato de cadena para el procedimiento almacenado
+        String fechaInicioSQL = fechaInicio.toString();
+        String fechaFinSQL = fechaFin.toString();
+
+        // Llamada al método en el Controlador
+        Controlador.listarExcursionesPorFecha(fechaInicioSQL, fechaFinSQL);
     }
+
 
     public static void mostrarMensaje(String mensaje) {
         System.out.println(mensaje);

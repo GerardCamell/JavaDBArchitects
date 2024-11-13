@@ -7,13 +7,11 @@ import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.math.BigDecimal;
-
 
 public class SocioDAO {
 
     // Método para agregar un nuevo socio
-    public void addSocio(Socio socio) throws SocioYaExisteException {
+    /*public void addSocio(Socio socio) throws SocioYaExisteException {
         try (Connection connection = DatabaseConnection.getConnection()) {
             connection.setAutoCommit(false);  // Iniciar transacción
 
@@ -79,18 +77,15 @@ public class SocioDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
-    //Metodo registrarSocio mediante procedimiento almacenado
-
+    // Método registrarSocio mediante procedimiento almacenado
     public static void registrarSocioPA(String nombre, int tipoSocio, String nif, int idFederacion, Integer idSocioPadre, Object extra) {
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/producto3", "root", "Gecabo13bcn24021")) {
-            // Desactivamos el auto-commit para iniciar la transacción
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/producto3", "root", "Againdifficult23!")) {
             conn.setAutoCommit(false);
 
             String sql = "{CALL registrarSocio(?, ?, ?, ?, ?, ?)}";
             try (CallableStatement stmt = conn.prepareCall(sql)) {
-                // Establecemos los parámetros de entrada del procedimiento almacenado
                 stmt.setString(1, nombre);
                 stmt.setString(2, obtenerTipoSocio(tipoSocio));
                 stmt.setString(3, nif);
@@ -98,14 +93,10 @@ public class SocioDAO {
                 stmt.setObject(5, idSocioPadre);
                 stmt.setString(6, obtenerTipoSeguro(extra));
 
-                // Ejecutar el procedimiento
                 stmt.executeUpdate();
-
-                // Confirmamos la transacción
                 conn.commit();
                 System.out.println("Socio registrado correctamente.");
             } catch (SQLException e) {
-                // Si hay un error, revertimos la transacción
                 if (conn != null) {
                     try {
                         conn.rollback();
@@ -115,7 +106,6 @@ public class SocioDAO {
                     }
                 }
             } finally {
-                // Restauramos el auto-commit
                 if (conn != null) {
                     conn.setAutoCommit(true);
                 }
@@ -125,107 +115,38 @@ public class SocioDAO {
         }
     }
 
+    public List<Socio> listarSociosPorTipoPA(int tipoSocio) {
+        List<Socio> socios = new ArrayList<>();
+        String tipo = tipoSocio == 0 ? "ESTANDAR" : tipoSocio == 1 ? "FEDERADO" : "INFANTIL";
 
-/* //Sin transacción
-    public static void registrarSocioPA(String nombre, int tipoSocio, String nif, int idFederacion, Integer idSocioPadre, Object extra) {
-        // Aquí realizas la llamada al procedimiento almacenado en MySQL
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/producto3", "root", "Gecabo13bcn24021")) {
-            String sql = "{CALL registrarSocio(?, ?, ?, ?, ?, ?)}";
-            try (CallableStatement stmt = conn.prepareCall(sql)) {
-                // Establecemos los parámetros de entrada del procedimiento almacenado
-                stmt.setString(1, nombre);
-                stmt.setString(2, obtenerTipoSocio(tipoSocio));  // Convierte el tipoSocio en el valor adecuado (ESTANDAR, FEDERADO, INFANTIL)
-                stmt.setString(3, nif);
-                stmt.setInt(4, idFederacion);
-                stmt.setObject(5, idSocioPadre);  // Puede ser null si no es federado
-                stmt.setString(6, obtenerTipoSeguro(extra));  // Obtén el tipo de seguro si aplica
+        String query = "{CALL listarSociosPorTipo(?)}";
 
-                // Ejecutar el procedimiento
-                stmt.executeUpdate();
-                System.out.println("Socio registrado correctamente.");
-            } catch (SQLException e) {
-                System.err.println("Error al ejecutar el procedimiento: " + e.getMessage());
-            }
-        } catch (SQLException e) {
-            System.err.println("Error de conexión: " + e.getMessage());
-        }
-    }
-
-    */
-
-    private static String obtenerTipoSocio(int tipoSocio) {
-        // Mapear el valor numérico a una cadena ENUM de tipoSocio
-        switch (tipoSocio) {
-            case 0: return "ESTANDAR";
-            case 1: return "FEDERADO";
-            case 2: return "INFANTIL";
-            default: throw new IllegalArgumentException("Tipo de socio inválido.");
-        }
-    }
-
-    private static String obtenerTipoSeguro(Object extra) {
-        // Si el socio es Estandar, tenemos un seguro asociado
-        if (extra instanceof Seguro) {
-            Seguro seguro = (Seguro) extra;
-            return seguro.getTipo().toString();  // Devuelve "BASICO" o "COMPLETO"
-        }
-        return null;  // No hay seguro si el socio no es Estandar
-    }
-
-    // Método para insertar federación con un ID específico si no existe
-    private void insertarFederacionConId(Integer idFederacion, String nombreFederacion, Connection connection) throws SQLException {
-        String query = "INSERT INTO federaciones (id_federacion, nombre) VALUES (?, ?)";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setInt(1, idFederacion);
-            preparedStatement.setString(2, nombreFederacion);
-            preparedStatement.executeUpdate();
-            System.out.println("Federación insertada con ID " + idFederacion + " y Nombre = " + nombreFederacion);
-        }
-    }
-
-    // Método para verificar si una federación existe
-    private boolean federacionExiste(Integer idFederacion, Connection connection) throws SQLException {
-        String query = "SELECT COUNT(*) FROM federaciones WHERE id_federacion = ?";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setInt(1, idFederacion);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                return resultSet.getInt(1) > 0;
-            }
-        }
-        return false;
-    }
-
-    // Método para eliminar un socio
-    public boolean deleteSocio(int numeroSocio) throws SocioNoExisteException, SocioConInscripcionesException {
-        if (socioTieneInscripciones(numeroSocio)) {
-            throw new SocioConInscripcionesException("El socio con número " + numeroSocio + " tiene inscripciones activas y no puede ser eliminado.");
-        }
-
-        String query = "DELETE FROM Socios WHERE numeroSocio = ?";
         try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+             CallableStatement callableStatement = connection.prepareCall(query)) {
 
-            preparedStatement.setInt(1, numeroSocio);
-            int rowsAffected = preparedStatement.executeUpdate();
+            connection.setAutoCommit(false);
+            callableStatement.setString(1, tipo);
 
-            if (rowsAffected == 0) {
-                throw new SocioNoExisteException("El socio con número " + numeroSocio + " no existe.");
+            ResultSet resultSet = callableStatement.executeQuery();
+
+            while (resultSet.next()) {
+                socios.add(mapResultSetToSocio(resultSet));
             }
 
-            return true;
+            connection.commit();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return false;
+        return socios;
     }
+
 
     //Metodo para eliminar socio mediante procedimiento almacenado
 
     public static void eliminarSocioPA(int idSocio) {
         String url = "jdbc:mysql://127.0.0.1:3306/producto3";
         String usuario = "root";
-        String contraseña = "Gecabo13bcn24021";
+        String contraseña = "Againdifficult23!";
 
         try (Connection conn = DriverManager.getConnection(url, usuario, contraseña)) {
             conn.setAutoCommit(false);  // Iniciar transacción
@@ -248,34 +169,42 @@ public class SocioDAO {
     }
 
 
-    // Método para verificar si un socio tiene inscripciones activas
-    public boolean socioTieneInscripciones(int numeroSocio) {
-        String query = "SELECT COUNT(*) FROM Inscripciones WHERE id_socio = ?";
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
-            preparedStatement.setInt(1, numeroSocio);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            resultSet.next();
-            return resultSet.getInt(1) > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
+    private static String obtenerTipoSocio(int tipoSocio) {
+        switch (tipoSocio) {
+            case 0: return "ESTANDAR";
+            case 1: return "FEDERADO";
+            case 2: return "INFANTIL";
+            default: throw new IllegalArgumentException("Tipo de socio inválido.");
         }
-        return false;
     }
 
-    // Método para verificar si un socio existe
-    public boolean socioExiste(int numeroSocio) {
-        String query = "SELECT COUNT(*) FROM Socios WHERE numeroSocio = ?";
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+    private static String obtenerTipoSeguro(Object extra) {
+        if (extra instanceof Seguro) {
+            Seguro seguro = (Seguro) extra;
+            return seguro.getTipo().toString();
+        }
+        return null;
+    }
 
-            preparedStatement.setInt(1, numeroSocio);
+    private void insertarFederacionConId(Integer idFederacion, String nombreFederacion, Connection connection) throws SQLException {
+        String query = "INSERT INTO federaciones (id_federacion, nombre) VALUES (?, ?)";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, idFederacion);
+            preparedStatement.setString(2, nombreFederacion);
+            preparedStatement.executeUpdate();
+            System.out.println("Federación insertada con ID " + idFederacion + " y Nombre = " + nombreFederacion);
+        }
+    }
+
+    private boolean federacionExiste(Integer idFederacion, Connection connection) throws SQLException {
+        String query = "SELECT COUNT(*) FROM federaciones WHERE id_federacion = ?";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, idFederacion);
             ResultSet resultSet = preparedStatement.executeQuery();
-            resultSet.next();
-            return resultSet.getInt(1) > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
+            if (resultSet.next()) {
+                return resultSet.getInt(1) > 0;
+            }
         }
         return false;
     }
@@ -297,58 +226,7 @@ public class SocioDAO {
         return socio;
     }
 
-    // Método para obtener todos los socios
-    public List<Socio> getAllSocios() {
-        List<Socio> socios = new ArrayList<>();
-        String query = "SELECT * FROM Socios";
-
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query);
-             ResultSet resultSet = preparedStatement.executeQuery()) {
-
-            while (resultSet.next()) {
-                socios.add(mapResultSetToSocio(resultSet));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return socios;
-    }
-
-    // Método para actualizar los datos de un socio
-    public void updateSocio(Socio socio) {
-        String query = "UPDATE Socios SET nombre = ?, cuota_mensual = ? WHERE numeroSocio = ?";
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setString(1, socio.getNombre());
-            preparedStatement.setBigDecimal(2, socio.getCuotaMensual());
-            preparedStatement.setInt(3, socio.getNumeroSocio());
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    // Método para listar socios por tipo
-    public List<Socio> listarSociosPorTipo(int tipoSocio) {
-        List<Socio> socios = new ArrayList<>();
-        String tipo = tipoSocio == 0 ? "ESTANDAR" : tipoSocio == 1 ? "FEDERADO" : "INFANTIL";
-        String query = "SELECT * FROM Socios WHERE tipo_socio = ?";
-
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setString(1, tipo);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            while (resultSet.next()) {
-                socios.add(mapResultSetToSocio(resultSet));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return socios;
-    }
-
+    // Método auxiliar para mapear el ResultSet a un objeto Socio
     private Socio mapResultSetToSocio(ResultSet resultSet) throws SQLException {
         int numeroSocio = resultSet.getInt("numeroSocio");
         String nombre = resultSet.getString("nombre");
@@ -376,4 +254,40 @@ public class SocioDAO {
                 throw new SQLException("Tipo de socio desconocido: " + tipoSocio);
         }
     }
+    // Método para actualizar los datos de un socio en la base de datos
+    public void updateSocio(Socio socio) {
+        String query = "UPDATE Socios SET nombre = ?, tipo_socio = ?, nif = ?, cuota_mensual = ? WHERE numeroSocio = ?";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            preparedStatement.setString(1, socio.getNombre());
+            preparedStatement.setString(2, socio.getTipoSocio());
+            preparedStatement.setString(3, socio.getNif());
+            preparedStatement.setBigDecimal(4, socio.getCuotaMensual());
+            preparedStatement.setInt(5, socio.getNumeroSocio());
+
+            preparedStatement.executeUpdate();
+            System.out.println("Socio actualizado correctamente.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    // Métodos para verificar si un socio existe
+    public boolean socioExiste(int numeroSocio) {
+        String query = "SELECT COUNT(*) FROM Socios WHERE numeroSocio = ?";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            preparedStatement.setInt(1, numeroSocio);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            resultSet.next();
+            return resultSet.getInt(1) > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }
+

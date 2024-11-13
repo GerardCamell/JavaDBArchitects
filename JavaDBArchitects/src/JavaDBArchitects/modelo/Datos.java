@@ -23,37 +23,35 @@ public class Datos {
     // Métodos de gestión de Socios
     // ------------------------------
 
-    public static boolean registrarSocio(List<Object> parametros) throws SocioYaExisteException, SeguroInvalidoException, TipoSocioInvalidoException {
-        Socio socio = null;
+    public static boolean registrarSocioPA(List<Object> parametros) throws SocioYaExisteException, SeguroInvalidoException, TipoSocioInvalidoException {
         int tipoSocio = (Integer) parametros.get(0);
-        int numeroSocio = (Integer) parametros.get(1);
         String nombre = parametros.get(2).toString();
         String NIF = parametros.get(3).toString();
         BigDecimal cuotaMensual = (BigDecimal) parametros.get(5);
+        Object extra = null;
+        int idFederacion = 0;  // Inicializamos en 0 para los federados
+        Integer idSocioPadre = null;  // Inicializamos en null para los infantiles
 
         if (tipoSocio == 0) {
-            Seguro seguro = (Seguro) parametros.get(4);
-            socio = new Estandar(numeroSocio, nombre, NIF, seguro, cuotaMensual);
-
+            extra = (Seguro) parametros.get(4);
         } else if (tipoSocio == 1) {
             Federacion federacion = (Federacion) parametros.get(4);
-            socio = new Federado(numeroSocio, nombre, NIF, federacion, cuotaMensual);
-
+            idFederacion = federacion.getId_federacion();
+            extra = federacion;
         } else if (tipoSocio == 2) {
-            int numSocioPadreOMadre = (Integer) parametros.get(4);
-            socio = new Infantil(numeroSocio, nombre, numSocioPadreOMadre, cuotaMensual);
-
+            idSocioPadre = (Integer) parametros.get(4);
         } else {
             throw new TipoSocioInvalidoException("El tipo de socio es inválido.");
         }
 
-        if (socioDAO.socioExiste(numeroSocio)) {
-            throw new SocioYaExisteException("El socio con número " + numeroSocio + " ya existe.");
+        if (socioDAO.socioExiste((Integer) parametros.get(1))) {
+            throw new SocioYaExisteException("El socio con número " + parametros.get(1) + " ya existe.");
         }
 
-        socioDAO.addSocio(socio);
+        socioDAO.registrarSocioPA(nombre, tipoSocio, NIF, idFederacion, idSocioPadre, extra);
         return true;
     }
+
 
     public static boolean eliminarSocio(int numeroSocio) throws SocioNoExisteException, SocioConInscripcionesException {
         Socio socio = socioDAO.getSocioByNumero(numeroSocio);  // Usar int
@@ -66,12 +64,13 @@ public class Datos {
             throw new SocioConInscripcionesException("El socio no puede ser eliminado.");
         }
 
-        socioDAO.deleteSocio(numeroSocio);
+        socioDAO.eliminarSocioPA(numeroSocio);  // Cambiado a eliminarSocioPA
         return true;
     }
 
+
     public static List<Socio> listarSocios(int tipoSocio) {
-        return socioDAO.listarSociosPorTipo(tipoSocio);
+        return socioDAO.listarSociosPorTipoPA(tipoSocio);
     }
 
     // ------------------------------
@@ -180,11 +179,7 @@ public class Datos {
             throw new CancelacionInvalidaException("No se puede eliminar una inscripción de una excursión ya realizada.");
         }
 
-        inscripcionDAO.eliminarInscripcion(numeroInscripcion);
+        inscripcionDAO.eliminarInscripcionPA(Integer.parseInt(numeroInscripcion));  // Cambiado a eliminarInscripcionPA y convertido a int
         return true;
-    }
-
-    public static List<Inscripcion> listarInscripciones() {
-        return inscripcionDAO.getAllInscripciones();
     }
 }

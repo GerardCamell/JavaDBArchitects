@@ -11,6 +11,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.math.BigDecimal;
+import java.sql.SQLException;
+
 
 
 public class Controlador {
@@ -28,8 +30,14 @@ public class Controlador {
         MenuPrincipal.mostrarMenu();    // Llama al menú principal después de la inicialización
     }
 
+    public static void registrarSocioPA(String nombre, int tipoSocio, String nif, int idFederacion, Integer idSocioPadre, Object extra) {
+        socioDAO.registrarSocioPA(nombre, tipoSocio, nif, idFederacion, idSocioPadre, extra);
+        MenuPrincipal.mostrarMensaje("Socio registrado correctamente.");
+    }
 
-    public static void registrarSocio(int numeroSocio, String nombre, int tipoSocio, String NIF, Object extra, BigDecimal cuotaMensual) {
+
+
+    /*public static void registrarSocio(int numeroSocio, String nombre, int tipoSocio, String NIF, Object extra, BigDecimal cuotaMensual) {
         try {
             Socio socio;
             if (tipoSocio == 0) { // Estandar
@@ -52,14 +60,12 @@ public class Controlador {
         } catch (TipoSocioInvalidoException e) {
             MenuPrincipal.mostrarError("Error: El tipo de socio proporcionado no es válido.");
         }
-    }
-
-
+    }*/
 
 
 
     // Método para eliminar un socio
-    public static void eliminarSocio(int numeroSocio) {
+    /*public static void eliminarSocio(int numeroSocio) {
         try {
             socioDAO.deleteSocio(numeroSocio);
             MenuPrincipal.mostrarMensaje("Socio eliminado con éxito.");
@@ -68,17 +74,29 @@ public class Controlador {
         } catch (SocioConInscripcionesException e) {
             MenuPrincipal.mostrarError("Error: El socio tiene inscripciones activas y no puede ser eliminado.");
         }
+    }*/
+
+    // Método para eliminar un socio mediante procedimiento almacenado
+    public static void eliminarSocioPA(int numeroSocio) {
+        SocioDAO.eliminarSocioPA(numeroSocio);
+        MenuPrincipal.mostrarMensaje("Socio eliminado con éxito mediante procedimiento almacenado.");
     }
 
-    // Método para registrar una excursión
-    public static void registrarExcursion(String codigo, String descripcion, LocalDate fecha, int numeroDias, float precio) throws ExcursionYaExisteException {
-        Excursion excursion = new Excursion(codigo, descripcion, java.sql.Date.valueOf(fecha), numeroDias, precio);
-        excursionDAO.addExcursion(excursion);
+
+    public static void registrarExcursionPA(String codigo, String descripcion, LocalDate fecha, int numeroDias, float precio) {
+        excursionDAO.registrarExcursionPA(codigo, descripcion, fecha, numeroDias, precio);
         MenuPrincipal.mostrarMensaje("Excursión registrada con éxito.");
     }
 
+    // Método en Controlador para eliminar una excursión usando procedimiento almacenado
+    public static boolean eliminarExcursionPA(String idExcursion) {
+        return ExcursionDAO.eliminarExcursionPA(idExcursion);
+    }
+
+
+
     // Método para eliminar una excursión
-    public static boolean eliminarExcursion(String codigoExcursion) {
+    /*public static boolean eliminarExcursion(String codigoExcursion) {
         try {
             excursionDAO.deleteExcursion(codigoExcursion);
             MenuPrincipal.mostrarMensaje("Excursión eliminada con éxito.");
@@ -90,60 +108,29 @@ public class Controlador {
             MenuPrincipal.mostrarError("Error: La excursión tiene inscripciones activas y no puede ser eliminada.");
             return false;
         }
+    }*/
+
+    // Método para inscribir en una excursión mediante procedimiento almacenado
+    public static void inscribirEnExcursionPA(int numeroSocio, String codigoExcursion, LocalDate fechaInscripcion) {
+        InscripcionDAO.inscribirEnExcursionPA(numeroSocio, codigoExcursion, fechaInscripcion);
+        MenuPrincipal.mostrarMensaje("Inscripción realizada con éxito mediante procedimiento almacenado.");
     }
 
-    // Método para inscribir en una excursión
-    public static void inscribirEnExcursion(int numeroSocio, String codigoExcursion, LocalDate fechaInscripcion) {
-        try {
-            Socio socio = socioDAO.getSocioByNumero(numeroSocio);
-            Excursion excursion = excursionDAO.getExcursionById(codigoExcursion);
 
-            if (socio == null) {
-                throw new SocioNoExisteException("El socio no existe.");
-            }
-            if (excursion == null) {
-                throw new ExcursionNoExisteException("La excursión no existe.");
-            }
 
-            // Verificar la fecha de inscripción aquí directamente
-            LocalDate fechaExcursion = excursion.getFechaAsLocalDate();
-            System.out.println("Fecha de inscripción: " + fechaInscripcion);
-            System.out.println("Fecha de excursión: " + fechaExcursion);
-
-            if (fechaInscripcion.isAfter(fechaExcursion)) {
-                throw new FechaInvalidaException("La fecha de inscripción no puede ser posterior a la fecha de la excursión.");
-            }
-
-            // Si la fecha es válida, continúa con la inscripción
-            Inscripcion inscripcion = new Inscripcion(null, socio, excursion, Date.valueOf(fechaInscripcion));
-            inscripcionDAO.addInscripcion(inscripcion);
-            MenuPrincipal.mostrarMensaje("Inscripción realizada con éxito.");
-        } catch (InscripcionYaExisteException e) {
-            MenuPrincipal.mostrarError("Error: Ya estás inscrito en esta excursión.");
-        } catch (SocioNoExisteException e) {
-            MenuPrincipal.mostrarError("Error: El socio no existe.");
-        } catch (ExcursionNoExisteException e) {
-            MenuPrincipal.mostrarError("Error: La excursión no existe.");
-        } catch (FechaInvalidaException e) {
-            MenuPrincipal.mostrarError(e.getMessage());
+    // Método para eliminar una inscripción mediante procedimiento almacenado
+    public static void eliminarInscripcionPA(int numeroInscripcion) {
+        boolean eliminado = InscripcionDAO.eliminarInscripcionPA(numeroInscripcion);
+        if (eliminado) {
+            MenuPrincipal.mostrarMensaje("Inscripción eliminada con éxito mediante procedimiento almacenado.");
+        } else {
+            MenuPrincipal.mostrarError("No se encontró la inscripción o no se pudo eliminar.");
         }
     }
 
-
-    // Método para eliminar una inscripción
-    public static void eliminarInscripcion(String numeroInscripcion) {
-        try {
-            inscripcionDAO.eliminarInscripcion(numeroInscripcion);
-            MenuPrincipal.mostrarMensaje("Inscripción eliminada con éxito.");
-        } catch (InscripcionNoExisteException e) {
-            MenuPrincipal.mostrarError("Error: La inscripción no existe.");
-        } catch (CancelacionInvalidaException e) {
-            MenuPrincipal.mostrarError(e.getMessage());
-        }
-    }
 
     // Método para listar todas las inscripciones
-    public static void listarInscripciones() {
+    /*public static void listarInscripciones() {
         List<Inscripcion> inscripciones = inscripcionDAO.getAllInscripciones();
         for (Inscripcion inscripcion : inscripciones) {
             LocalDate fechaExcursion = inscripcion.getExcursion().getFechaAsLocalDate();
@@ -160,6 +147,31 @@ public class Controlador {
             }
         }
     }
+*/
+
+    // Método para listar inscripciones mediante procedimiento almacenado
+    public static void listarInscripcionesPA() {
+        InscripcionDAO.listarInscripcionesPA();
+    }
+
+    // Método para listar excursiones por fechas mediante procedimiento almacenado
+    public static void listarExcursionesPorFecha(String fechaInicio, String fechaFin) {
+        ExcursionDAO.listarExcursionesPorFecha(fechaInicio, fechaFin);
+    }
+
+    // Método para listar inscripciones mediante procedimiento almacenado
+    public static void listarSocios(int tipoSocio) {
+        List<Socio> socios = socioDAO.listarSociosPorTipoPA(tipoSocio);
+        if (socios.isEmpty()) {
+            MenuPrincipal.mostrarMensaje("No se encontraron socios.");
+        } else {
+            for (Socio socio : socios) {
+                MenuPrincipal.mostrarMensaje(socio.toString());
+            }
+        }
+    }
+
+
 
     // Método para mostrar inscripciones con filtros
     public static void mostrarInscripcionesConFiltros(Integer numeroSocio, LocalDate fechaInicio, LocalDate fechaFin) {
@@ -210,7 +222,7 @@ public class Controlador {
     }
 
     // Método para listar socios por tipo
-    public static void listarSocios(int tipoSocio) {
+    /*public static void listarSocios(int tipoSocio) {
         List<Socio> socios = socioDAO.listarSociosPorTipo(tipoSocio);
         if (socios.isEmpty()) {
             MenuPrincipal.mostrarMensaje("No se encontraron socios.");
@@ -219,7 +231,7 @@ public class Controlador {
                 MenuPrincipal.mostrarMensaje(socio.toString());
             }
         }
-    }
+    }*/
 
     public static void consultarFacturaMensual(int numeroSocio) {
         Socio socio = socioDAO.getSocioByNumero(numeroSocio);

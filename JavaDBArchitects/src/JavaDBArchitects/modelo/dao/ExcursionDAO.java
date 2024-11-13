@@ -37,7 +37,7 @@ public class ExcursionDAO {
         CallableStatement stmt = null;
 
         try {
-            conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/producto3", "root", "Gecabo13bcn24021");
+            conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/producto3", "root", "Againdifficult23!");
             conn.setAutoCommit(false);  // Inicia la transacción
 
             String sql = "{CALL registrarExcursion(?, ?, ?, ?, ?)}";
@@ -80,29 +80,6 @@ public class ExcursionDAO {
         }
     }
 
-    //Sin transacción
-    /* public static void registrarExcursionPA(String idExcursion, String descripcion, LocalDate fecha, int numDias, float precioInscripcion) {
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/producto3", "root", "Gecabo13bcn24021")) {
-            String sql = "{CALL registrarExcursion(?, ?, ?, ?, ?)}";
-            try (CallableStatement stmt = conn.prepareCall(sql)) {
-                // Establecer los parámetros del procedimiento
-                stmt.setString(1, idExcursion);
-                stmt.setString(2, descripcion);
-                Date fechaSQL = Date.valueOf(fecha);
-                stmt.setDate(3, Date.valueOf(fecha));
-                stmt.setInt(4, numDias);
-                stmt.setFloat(5, precioInscripcion);
-
-                // Ejecutar el procedimiento
-                stmt.executeUpdate();
-                System.out.println("Excursión registrada correctamente.");
-            } catch (SQLException e) {
-                System.err.println("Error al ejecutar el procedimiento: " + e.getMessage());
-            }
-        } catch (SQLException e) {
-            System.err.println("Error de conexión a la base de datos: " + e.getMessage());
-        }
-    } */
 
 
 
@@ -199,7 +176,7 @@ public class ExcursionDAO {
         boolean eliminado = false;
 
         try {
-            conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/producto3", "root", "Gecabo13bcn24021");
+            conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/producto3", "root", "Againdifficult23!");
             conn.setAutoCommit(false);  // Iniciar transacción
 
             String sql = "{CALL eliminarExcursion(?)}";
@@ -278,7 +255,7 @@ public class ExcursionDAO {
         ResultSet rs = null;
 
         try {
-            conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/producto3", "root", "Gecabo13bcn24021");
+            conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/producto3", "root", "Againdifficult23!");
 
             String sql = "{CALL listarExcursionesPorFechas(?, ?)}";
             stmt = conn.prepareCall(sql);

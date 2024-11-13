@@ -78,7 +78,7 @@ public class InscripcionDAO {
     public static void inscribirEnExcursionPA(int idSocio, String idExcursion, LocalDate fechaInscripcion) {
         String url = "jdbc:mysql://127.0.0.1:3306/producto3";
         String usuario = "root";
-        String contraseña = "Gecabo13bcn24021";
+        String contraseña = "Againdifficult23!";
 
         // Convertimos LocalDate a SQL Date para la base de datos
         java.sql.Date fechaSQL = java.sql.Date.valueOf(fechaInscripcion);
@@ -239,33 +239,7 @@ public class InscripcionDAO {
     }
 
 
-    // Método para eliminar una inscripción por su número de inscripción
-    public boolean eliminarInscripcion(String numInscripcion) throws InscripcionNoExisteException, CancelacionInvalidaException {
-        String query = "DELETE FROM Inscripciones WHERE id_inscripcion = ?";
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
-            // Obtener la fecha de la excursión asociada a esta inscripción
-            Date fechaExcursion = obtenerFechaExcursion(numInscripcion);
-
-            // Comprobar si la excursión ya ha sido realizada (es anterior a la fecha actual)
-            if (fechaExcursion != null && fechaExcursion.before(new java.sql.Date(System.currentTimeMillis()))) {
-                throw new CancelacionInvalidaException("La excursión ya ha sido realizada y no puede cancelarse.");
-            }
-
-            preparedStatement.setString(1, numInscripcion);
-            int rowsAffected = preparedStatement.executeUpdate();
-
-            if (rowsAffected == 0) {
-                throw new InscripcionNoExisteException("La inscripción con ID " + numInscripcion + " no existe.");
-            }
-
-            return true;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
 
     //Metodo para eliminar una inscripción mediante procedimiento almacenado
 
@@ -278,7 +252,7 @@ public class InscripcionDAO {
 
         try {
             // Conectar a la base de datos
-            conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/producto3", "root", "Gecabo13bcn24021");
+            conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/producto3", "root", "Againdifficult23!");
             conn.setAutoCommit(false);  // Iniciar la transacción
 
             // Llamar al procedimiento almacenado
@@ -333,7 +307,7 @@ public class InscripcionDAO {
         ResultSet rs = null;
 
         try {
-            conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/producto3", "root", "Gecabo13bcn24021");
+            conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/producto3", "root", "Againdifficult23!");
 
             String sql = "{CALL listarInscripciones()}";
             stmt = conn.prepareCall(sql);
