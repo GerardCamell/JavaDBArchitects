@@ -30,7 +30,7 @@ public class ExcursionDAO {
         }
     }
 
-    //Metodo para regitsrar excursion mediante procedimiento almacenado
+    //Metodo para regitsrar excursion mediante procedimiento almacenado (Transacción)
 
     public static void registrarExcursionPA(String idExcursion, String descripcion, LocalDate fecha, int numDias, float precioInscripcion) {
         Connection conn = null;
@@ -168,7 +168,7 @@ public class ExcursionDAO {
         }
     }
 
-    //Metodo para eliminar excursion mediante procedimiento almacenado
+    //Metodo para eliminar excursion mediante procedimiento almacenado (Transacción)
 
     public static boolean eliminarExcursionPA(String idExcursion) {
         Connection conn = null;
@@ -249,7 +249,7 @@ public class ExcursionDAO {
 
     //Metodo para listar excursiones por fecha mediante procedimiento almacenado
 
-    public static void listarExcursionesPorFecha(String fechaInicio, String fechaFin) {
+    public static void listarExcursionesPorFechaPA(String fechaInicio, String fechaFin) {
         Connection conn = null;
         CallableStatement stmt = null;
         ResultSet rs = null;

@@ -205,6 +205,8 @@ public class Controlador {
         }
     }
 
+
+
     // Método para modificar los datos de un socio
     public static void modificarDatosSocio(int numeroSocio, String nuevoNombre) {
         try {
@@ -220,6 +222,11 @@ public class Controlador {
             MenuPrincipal.mostrarError("Error: El socio no existe.");
         }
     }
+
+
+
+
+
 
     // Método para listar socios por tipo
     /*public static void listarSocios(int tipoSocio) {
