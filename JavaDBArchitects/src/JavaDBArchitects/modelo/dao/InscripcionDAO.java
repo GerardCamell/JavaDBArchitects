@@ -13,65 +13,7 @@ import java.util.List;
 
 public class InscripcionDAO {
 
-    public void addInscripcion(Inscripcion inscripcion) throws InscripcionYaExisteException, FechaInvalidaException {
-        if (inscripcionExiste(inscripcion.getSocio().getNumeroSocio(), inscripcion.getExcursion().getIdExcursion())) {
-            throw new InscripcionYaExisteException("El socio ya está inscrito en esta excursión.");
-        }
-
-        // Obtener la fecha de la excursión desde la base de datos
-        Date fechaExcursionSQL = obtenerFechaExcursion(inscripcion.getExcursion().getIdExcursion());
-        if (fechaExcursionSQL == null) {
-            throw new FechaInvalidaException("No se pudo encontrar la fecha de la excursión.");
-        }
-
-        // Convertimos las fechas a LocalDate para comparar
-        LocalDate fechaInscripcion = inscripcion.getFecha_inscripcion().toLocalDate();
-        LocalDate fechaExcursion = fechaExcursionSQL.toLocalDate();
-
-        // Validación de la fecha de inscripción
-        if (fechaInscripcion.isAfter(fechaExcursion)) {
-            System.out.println("Error: La fecha de inscripción es posterior a la fecha de la excursión.");
-            throw new FechaInvalidaException("La fecha de inscripción no puede ser posterior a la fecha de la excursión.");
-        }
-
-        System.out.println("Validación de fecha de inscripción superada. Procediendo a insertar inscripción.");
-
-        String query = "INSERT INTO Inscripciones (id_socio, id_excursion, fecha_inscripcion) VALUES (?, ?, ?)";
-        try (Connection connection = DatabaseConnection.getConnection()) {
-            // Iniciar la transacción
-            connection.setAutoCommit(false);
-
-            try (PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
-                preparedStatement.setInt(1, inscripcion.getSocio().getNumeroSocio());
-                preparedStatement.setString(2, inscripcion.getExcursion().getIdExcursion());
-                preparedStatement.setDate(3, inscripcion.getFecha_inscripcion());
-
-                preparedStatement.executeUpdate();
-
-                // Obtener el id generado para la inscripción
-                ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
-                if (generatedKeys.next()) {
-                    inscripcion.setNumInscripcion(String.valueOf(generatedKeys.getInt(1)));
-                }
-
-                // Si queremos confirmar transacción
-                connection.commit();
-                System.out.println("Inscripción insertada correctamente en la base de datos.");
-
-            } catch (SQLException e) {
-                // Si algo va mal, volvemos para atras y la operación no se hace.
-                connection.rollback();
-                System.out.println("Error en la inserción de inscripción. La operación se ha revertido.");
-                e.printStackTrace();
-            } finally {
-                // restablecemos
-                connection.setAutoCommit(true);
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+//------METODOS CON PROCEDIMIENTOS ALMACENADOS Y TRANSACCIONES
 
     //Metodo para inscribir en una excursion mediante procedimiento almacenado
 
@@ -117,6 +59,100 @@ public class InscripcionDAO {
         }
     }
 
+
+    //Metodo para eliminar una inscripción mediante procedimiento almacenado
+
+    public static boolean eliminarInscripcionPA(int idInscripcion) {
+        Connection conn = null;
+        CallableStatement stmt = null;
+        boolean eliminado = false;
+
+        try {
+            conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/producto3", "root", "Againdifficult23!");
+            conn.setAutoCommit(false);
+
+            String sql = "{CALL eliminarInscripcion(?)}";
+            stmt = conn.prepareCall(sql);
+            stmt.setInt(1, idInscripcion);
+
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected > 0) {
+                conn.commit();
+                eliminado = true;
+            } else {
+                conn.rollback();
+            }
+
+        } catch (SQLException e) {
+            try {
+                if (conn != null) {
+                    conn.rollback();
+                }
+            } catch (SQLException rollbackEx) {
+                rollbackEx.printStackTrace();
+            }
+            e.printStackTrace();
+        } finally {
+            try {
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return eliminado;
+    }
+
+
+    //Metodo para listar inscripciones mediante procedimiento almacenado
+
+    public static void listarInscripcionesPA() {
+        Connection conn = null;
+        CallableStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/producto3", "root", "Againdifficult23!");
+
+            String sql = "{CALL listarInscripciones()}";
+            stmt = conn.prepareCall(sql);
+
+            // Ejecutar el procedimiento almacenado y obtener el resultado
+            rs = stmt.executeQuery();
+
+            // Procesar el resultado
+            while (rs.next()) {
+                int idInscripcion = rs.getInt("id_inscripcion");
+                int idSocio = rs.getInt("id_socio");
+                String nombreSocio = rs.getString("nombre_socio");
+                String idExcursion = rs.getString("id_excursion");
+                String descripcionExcursion = rs.getString("descripcion_excursion");
+                String fechaInscripcion = rs.getDate("fecha_inscripcion").toString();
+
+                System.out.println("ID Inscripción: " + idInscripcion);
+                System.out.println("ID Socio: " + idSocio + " - Nombre Socio: " + nombreSocio);
+                System.out.println("ID Excursión: " + idExcursion + " - Descripción Excursión: " + descripcionExcursion);
+                System.out.println("Fecha Inscripción: " + fechaInscripcion);
+                System.out.println("------------------------------------");
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error al listar inscripciones: " + e.getMessage());
+        } finally {
+            // Cerrar los recursos
+            try {
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                System.err.println("Error al cerrar recursos: " + e.getMessage());
+            }
+        }
+    }
+
+
+    //----RESTO DE MÉTODOS
 
     // Método para obtener inscripciones de un socio específico
     public List<Inscripcion> getInscripcionesBySocio(int numeroSocio) {
@@ -240,115 +276,6 @@ public class InscripcionDAO {
 
 
 
-
-    //Metodo para eliminar una inscripción mediante procedimiento almacenado
-
-    public static boolean eliminarInscripcionPA(int idInscripcion) {
-
-        // Declarar la conexión y la llamada al procedimiento almacenado
-        Connection conn = null;
-        CallableStatement stmt = null;
-        boolean eliminado = false;
-
-        try {
-            // Conectar a la base de datos
-            conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/producto3", "root", "Againdifficult23!");
-            conn.setAutoCommit(false);  // Iniciar la transacción
-
-            // Llamar al procedimiento almacenado
-            String sql = "{CALL eliminarInscripcion(?)}";
-            stmt = conn.prepareCall(sql);
-
-            // Configurar el parámetro de entrada
-            stmt.setInt(1, idInscripcion);
-
-            // Ejecutar el procedimiento
-            int rowsAffected = stmt.executeUpdate();
-
-            // Confirmar la transacción si se eliminó alguna fila
-            if (rowsAffected > 0) {
-                conn.commit();
-                eliminado = true;
-                System.out.println("Inscripción eliminada correctamente.");
-            } else {
-                System.out.println("No se encontró ninguna inscripción con el ID proporcionado.");
-                conn.rollback();  // Deshacer si no se eliminó ninguna fila
-            }
-
-        } catch (SQLException e) {
-            // Manejar errores de SQL
-            System.err.println("Error al eliminar inscripción: " + e.getMessage());
-            try {
-                if (conn != null) {
-                    conn.rollback();  // Deshacer en caso de error
-                }
-            } catch (SQLException rollbackEx) {
-                System.err.println("Error al hacer rollback: " + rollbackEx.getMessage());
-            }
-
-        } finally {
-            // Cerrar los recursos
-            try {
-                if (stmt != null) stmt.close();
-                if (conn != null) conn.close();
-            } catch (SQLException e) {
-                System.err.println("Error al cerrar recursos: " + e.getMessage());
-            }
-        }
-
-        return eliminado;
-    }
-
-    //Metodo para listar inscripciones mediante procedimiento almacenado
-
-    public static void listarInscripcionesPA() {
-        Connection conn = null;
-        CallableStatement stmt = null;
-        ResultSet rs = null;
-
-        try {
-            conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/producto3", "root", "Againdifficult23!");
-
-            String sql = "{CALL listarInscripciones()}";
-            stmt = conn.prepareCall(sql);
-
-            // Ejecutar el procedimiento almacenado y obtener el resultado
-            rs = stmt.executeQuery();
-
-            // Procesar el resultado
-            while (rs.next()) {
-                int idInscripcion = rs.getInt("id_inscripcion");
-                int idSocio = rs.getInt("id_socio");
-                String nombreSocio = rs.getString("nombre_socio");
-                String idExcursion = rs.getString("id_excursion");
-                String descripcionExcursion = rs.getString("descripcion_excursion");
-                String fechaInscripcion = rs.getDate("fecha_inscripcion").toString();
-
-                System.out.println("ID Inscripción: " + idInscripcion);
-                System.out.println("ID Socio: " + idSocio + " - Nombre Socio: " + nombreSocio);
-                System.out.println("ID Excursión: " + idExcursion + " - Descripción Excursión: " + descripcionExcursion);
-                System.out.println("Fecha Inscripción: " + fechaInscripcion);
-                System.out.println("------------------------------------");
-            }
-
-        } catch (SQLException e) {
-            System.err.println("Error al listar inscripciones: " + e.getMessage());
-        } finally {
-            // Cerrar los recursos
-            try {
-                if (rs != null) rs.close();
-                if (stmt != null) stmt.close();
-                if (conn != null) conn.close();
-            } catch (SQLException e) {
-                System.err.println("Error al cerrar recursos: " + e.getMessage());
-            }
-        }
-    }
-
-
-
-
-
             // Método auxiliar para obtener la fecha de una excursión asociada a una inscripción específica
     private Date obtenerFechaExcursion(String idExcursion) {
         String query = "SELECT fecha FROM Excursiones WHERE idExcursion = ?";
@@ -401,6 +328,67 @@ public class InscripcionDAO {
         return false;
     }
 
+//-----METODOS ANTERIORES SIN PROCEDIMIENTOS ALMACENADOS QUE ACTUALMENTE NO SE USAN:
+
+    public void addInscripcion(Inscripcion inscripcion) throws InscripcionYaExisteException, FechaInvalidaException {
+        if (inscripcionExiste(inscripcion.getSocio().getNumeroSocio(), inscripcion.getExcursion().getIdExcursion())) {
+            throw new InscripcionYaExisteException("El socio ya está inscrito en esta excursión.");
+        }
+
+        // Obtener la fecha de la excursión desde la base de datos
+        Date fechaExcursionSQL = obtenerFechaExcursion(inscripcion.getExcursion().getIdExcursion());
+        if (fechaExcursionSQL == null) {
+            throw new FechaInvalidaException("No se pudo encontrar la fecha de la excursión.");
+        }
+
+        // Convertimos las fechas a LocalDate para comparar
+        LocalDate fechaInscripcion = inscripcion.getFecha_inscripcion().toLocalDate();
+        LocalDate fechaExcursion = fechaExcursionSQL.toLocalDate();
+
+        // Validación de la fecha de inscripción
+        if (fechaInscripcion.isAfter(fechaExcursion)) {
+            System.out.println("Error: La fecha de inscripción es posterior a la fecha de la excursión.");
+            throw new FechaInvalidaException("La fecha de inscripción no puede ser posterior a la fecha de la excursión.");
+        }
+
+        System.out.println("Validación de fecha de inscripción superada. Procediendo a insertar inscripción.");
+
+        String query = "INSERT INTO Inscripciones (id_socio, id_excursion, fecha_inscripcion) VALUES (?, ?, ?)";
+        try (Connection connection = DatabaseConnection.getConnection()) {
+            // Iniciar la transacción
+            connection.setAutoCommit(false);
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+                preparedStatement.setInt(1, inscripcion.getSocio().getNumeroSocio());
+                preparedStatement.setString(2, inscripcion.getExcursion().getIdExcursion());
+                preparedStatement.setDate(3, inscripcion.getFecha_inscripcion());
+
+                preparedStatement.executeUpdate();
+
+                // Obtener el id generado para la inscripción
+                ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    inscripcion.setNumInscripcion(String.valueOf(generatedKeys.getInt(1)));
+                }
+
+                // Si queremos confirmar transacción
+                connection.commit();
+                System.out.println("Inscripción insertada correctamente en la base de datos.");
+
+            } catch (SQLException e) {
+                // Si algo va mal, volvemos para atras y la operación no se hace.
+                connection.rollback();
+                System.out.println("Error en la inserción de inscripción. La operación se ha revertido.");
+                e.printStackTrace();
+            } finally {
+                // restablecemos
+                connection.setAutoCommit(true);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
 }
 

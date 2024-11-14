@@ -4,14 +4,12 @@ import JavaDBArchitects.controlador.excepciones.*;
 import JavaDBArchitects.modelo.*;
 import JavaDBArchitects.modelo.dao.*;
 import JavaDBArchitects.vista.MenuPrincipal;
-
 import java.time.LocalDate;
-import java.sql.Date;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.math.BigDecimal;
-import java.sql.SQLException;
+
 
 
 
@@ -30,95 +28,42 @@ public class Controlador {
         MenuPrincipal.mostrarMenu();    // Llama al menú principal después de la inicialización
     }
 
-    public static void registrarSocioPA(String nombre, int tipoSocio, String nif, int idFederacion, Integer idSocioPadre, Object extra) {
-        socioDAO.registrarSocioPA(nombre, tipoSocio, nif, idFederacion, idSocioPadre, extra);
+
+    // Método para registrar un socio mediante procedimiento almacenado y transacciones
+    public static void registrarSocioPA(String nombre, int tipoSocio, String nif, int idFederacion, Integer idSocioPadre, Object extra, String nombreFederacion) {
+        socioDAO.registrarSocioPA(nombre, tipoSocio, nif, idFederacion, idSocioPadre, extra, nombreFederacion);
         MenuPrincipal.mostrarMensaje("Socio registrado correctamente.");
     }
 
 
 
-    /*public static void registrarSocio(int numeroSocio, String nombre, int tipoSocio, String NIF, Object extra, BigDecimal cuotaMensual) {
-        try {
-            Socio socio;
-            if (tipoSocio == 0) { // Estandar
-                if (extra instanceof Seguro) {
-                    socio = new Estandar(numeroSocio, nombre, NIF, (Seguro) extra, cuotaMensual);
-                } else {
-                    throw new IllegalArgumentException("Error: El socio estándar debe tener un seguro válido.");
-                }
-            } else if (tipoSocio == 1) { // Federado
-                socio = new Federado(numeroSocio, nombre, NIF, (Federacion) extra, cuotaMensual);
-            } else if (tipoSocio == 2) { // Infantil
-                socio = new Infantil(numeroSocio, nombre, (Integer) extra, cuotaMensual);
-            } else {
-                throw new TipoSocioInvalidoException("Tipo de socio no válido");
-            }
-            socioDAO.addSocio(socio);
-            MenuPrincipal.mostrarMensaje("Socio registrado con éxito.");
-        } catch (SocioYaExisteException e) {
-            MenuPrincipal.mostrarError("Error: El socio ya existe.");
-        } catch (TipoSocioInvalidoException e) {
-            MenuPrincipal.mostrarError("Error: El tipo de socio proporcionado no es válido.");
-        }
-    }*/
-
-
-
-    // Método para eliminar un socio
-    /*public static void eliminarSocio(int numeroSocio) {
-        try {
-            socioDAO.deleteSocio(numeroSocio);
-            MenuPrincipal.mostrarMensaje("Socio eliminado con éxito.");
-        } catch (SocioNoExisteException e) {
-            MenuPrincipal.mostrarError("Error: El socio no existe.");
-        } catch (SocioConInscripcionesException e) {
-            MenuPrincipal.mostrarError("Error: El socio tiene inscripciones activas y no puede ser eliminado.");
-        }
-    }*/
-
-    // Método para eliminar un socio mediante procedimiento almacenado
+    // Método para eliminar un socio mediante procedimiento almacenado y una transacción
     public static void eliminarSocioPA(int numeroSocio) {
         SocioDAO.eliminarSocioPA(numeroSocio);
         MenuPrincipal.mostrarMensaje("Socio eliminado con éxito mediante procedimiento almacenado.");
     }
 
-
+//Método para registrar una excursion con procedimiento almacenado y transacciones
     public static void registrarExcursionPA(String codigo, String descripcion, LocalDate fecha, int numeroDias, float precio) {
         excursionDAO.registrarExcursionPA(codigo, descripcion, fecha, numeroDias, precio);
         MenuPrincipal.mostrarMensaje("Excursión registrada con éxito.");
     }
 
-    // Método en Controlador para eliminar una excursión usando procedimiento almacenado
+    // Método en Controlador para eliminar una excursión usando procedimiento almacenado y transacciones
     public static boolean eliminarExcursionPA(String idExcursion) {
         return ExcursionDAO.eliminarExcursionPA(idExcursion);
     }
 
 
 
-    // Método para eliminar una excursión
-    /*public static boolean eliminarExcursion(String codigoExcursion) {
-        try {
-            excursionDAO.deleteExcursion(codigoExcursion);
-            MenuPrincipal.mostrarMensaje("Excursión eliminada con éxito.");
-            return true;
-        } catch (ExcursionNoExisteException e) {
-            MenuPrincipal.mostrarError("Error: La excursión no existe.");
-            return false;
-        } catch (EliminarExcursionConInscripcionesException e) {
-            MenuPrincipal.mostrarError("Error: La excursión tiene inscripciones activas y no puede ser eliminada.");
-            return false;
-        }
-    }*/
-
-    // Método para inscribir en una excursión mediante procedimiento almacenado
+    // Método para inscribir en una excursión mediante procedimiento almacenado y una transacción
     public static void inscribirEnExcursionPA(int numeroSocio, String codigoExcursion, LocalDate fechaInscripcion) {
         InscripcionDAO.inscribirEnExcursionPA(numeroSocio, codigoExcursion, fechaInscripcion);
         MenuPrincipal.mostrarMensaje("Inscripción realizada con éxito mediante procedimiento almacenado.");
     }
 
 
-
-    // Método para eliminar una inscripción mediante procedimiento almacenado
+    // Método para eliminar una inscripción mediante procedimiento almacenado y transacciones
     public static void eliminarInscripcionPA(int numeroInscripcion) {
         boolean eliminado = InscripcionDAO.eliminarInscripcionPA(numeroInscripcion);
         if (eliminado) {
@@ -129,26 +74,6 @@ public class Controlador {
     }
 
 
-    // Método para listar todas las inscripciones
-    /*public static void listarInscripciones() {
-        List<Inscripcion> inscripciones = inscripcionDAO.getAllInscripciones();
-        for (Inscripcion inscripcion : inscripciones) {
-            LocalDate fechaExcursion = inscripcion.getExcursion().getFechaAsLocalDate();
-            LocalDate fechaFinExcursion = inscripcion.getExcursion().calcularFechaFin();
-            int nDias = inscripcion.getExcursion().getNumDias();
-
-            if (nDias > 1) {
-                MenuPrincipal.mostrarMensaje(inscripcion + "\n" +
-                        "\n-- Las Fechas de la Excursión --\n" +
-                        "Fecha de INICIO de la Excursión: " + fechaExcursion.format(FORMATO_FECHA) + "\n" +
-                        "Fecha FINAL de la Excursión: " + fechaFinExcursion.format(FORMATO_FECHA) + "\n");
-            } else {
-                MenuPrincipal.mostrarMensaje(inscripcion + "\n Fecha de la Excursión: " + fechaExcursion.format(FORMATO_FECHA));
-            }
-        }
-    }
-*/
-
     // Método para listar inscripciones mediante procedimiento almacenado
     public static void listarInscripcionesPA() {
         InscripcionDAO.listarInscripcionesPA();
@@ -156,11 +81,11 @@ public class Controlador {
 
     // Método para listar excursiones por fechas mediante procedimiento almacenado
     public static void listarExcursionesPorFecha(String fechaInicio, String fechaFin) {
-        ExcursionDAO.listarExcursionesPorFecha(fechaInicio, fechaFin);
+        ExcursionDAO.listarExcursionesPorFechaPA(fechaInicio, fechaFin);
     }
 
-    // Método para listar inscripciones mediante procedimiento almacenado
-    public static void listarSocios(int tipoSocio) {
+    // Método para listar socios por tipo mediante procedimiento almacenado
+    public static void listarSociosPorTipoPA(int tipoSocio) {
         List<Socio> socios = socioDAO.listarSociosPorTipoPA(tipoSocio);
         if (socios.isEmpty()) {
             MenuPrincipal.mostrarMensaje("No se encontraron socios.");
@@ -171,6 +96,9 @@ public class Controlador {
         }
     }
 
+
+
+  //-----RESTO DE MÉTODOS SIN PROCEDIMIENTOS ALMACENADOS
 
 
     // Método para mostrar inscripciones con filtros
@@ -226,20 +154,6 @@ public class Controlador {
 
 
 
-
-
-    // Método para listar socios por tipo
-    /*public static void listarSocios(int tipoSocio) {
-        List<Socio> socios = socioDAO.listarSociosPorTipo(tipoSocio);
-        if (socios.isEmpty()) {
-            MenuPrincipal.mostrarMensaje("No se encontraron socios.");
-        } else {
-            for (Socio socio : socios) {
-                MenuPrincipal.mostrarMensaje(socio.toString());
-            }
-        }
-    }*/
-
     public static void consultarFacturaMensual(int numeroSocio) {
         Socio socio = socioDAO.getSocioByNumero(numeroSocio);
 
@@ -293,6 +207,93 @@ public class Controlador {
                     MenuPrincipal.mostrarMensaje("Excursión: " + excursion + " - Fecha: " + fechaExcursion);
                 }
             }
+
+
+
+
+
+
+            //---MÉTODOS ANTERIORES SIN PROCEDIMIENTOS ALMACENADOS QUE YA NO SE USAN:
+
+             /*public static void registrarSocio(int numeroSocio, String nombre, int tipoSocio, String NIF, Object extra, BigDecimal cuotaMensual) {
+        try {
+            Socio socio;
+            if (tipoSocio == 0) { // Estandar
+                if (extra instanceof Seguro) {
+                    socio = new Estandar(numeroSocio, nombre, NIF, (Seguro) extra, cuotaMensual);
+                } else {
+                    throw new IllegalArgumentException("Error: El socio estándar debe tener un seguro válido.");
+                }
+            } else if (tipoSocio == 1) { // Federado
+                socio = new Federado(numeroSocio, nombre, NIF, (Federacion) extra, cuotaMensual);
+            } else if (tipoSocio == 2) { // Infantil
+                socio = new Infantil(numeroSocio, nombre, (Integer) extra, cuotaMensual);
+            } else {
+                throw new TipoSocioInvalidoException("Tipo de socio no válido");
+            }
+            socioDAO.addSocio(socio);
+            MenuPrincipal.mostrarMensaje("Socio registrado con éxito.");
+        } catch (SocioYaExisteException e) {
+            MenuPrincipal.mostrarError("Error: El socio ya existe.");
+        } catch (TipoSocioInvalidoException e) {
+            MenuPrincipal.mostrarError("Error: El tipo de socio proporcionado no es válido.");
+        }
+    }*/
+
+
+
+            // Método para eliminar un socio
+    /*public static void eliminarSocio(int numeroSocio) {
+        try {
+            socioDAO.deleteSocio(numeroSocio);
+            MenuPrincipal.mostrarMensaje("Socio eliminado con éxito.");
+        } catch (SocioNoExisteException e) {
+            MenuPrincipal.mostrarError("Error: El socio no existe.");
+        } catch (SocioConInscripcionesException e) {
+            MenuPrincipal.mostrarError("Error: El socio tiene inscripciones activas y no puede ser eliminado.");
+        }
+    }*/
+
+            // Método para eliminar una excursión
+    /*public static boolean eliminarExcursion(String codigoExcursion) {
+        try {
+            excursionDAO.deleteExcursion(codigoExcursion);
+            MenuPrincipal.mostrarMensaje("Excursión eliminada con éxito.");
+            return true;
+        } catch (ExcursionNoExisteException e) {
+            MenuPrincipal.mostrarError("Error: La excursión no existe.");
+            return false;
+        } catch (EliminarExcursionConInscripcionesException e) {
+            MenuPrincipal.mostrarError("Error: La excursión tiene inscripciones activas y no puede ser eliminada.");
+            return false;
+        }
+    }*/
+
+
+            // Método para listar todas las inscripciones
+    /*public static void listarInscripciones() {
+        List<Inscripcion> inscripciones = inscripcionDAO.getAllInscripciones();
+        for (Inscripcion inscripcion : inscripciones) {
+            LocalDate fechaExcursion = inscripcion.getExcursion().getFechaAsLocalDate();
+            LocalDate fechaFinExcursion = inscripcion.getExcursion().calcularFechaFin();
+            int nDias = inscripcion.getExcursion().getNumDias();
+
+            if (nDias > 1) {
+                MenuPrincipal.mostrarMensaje(inscripcion + "\n" +
+                        "\n-- Las Fechas de la Excursión --\n" +
+                        "Fecha de INICIO de la Excursión: " + fechaExcursion.format(FORMATO_FECHA) + "\n" +
+                        "Fecha FINAL de la Excursión: " + fechaFinExcursion.format(FORMATO_FECHA) + "\n");
+            } else {
+                MenuPrincipal.mostrarMensaje(inscripcion + "\n Fecha de la Excursión: " + fechaExcursion.format(FORMATO_FECHA));
+            }
+        }
+    }
+*/
+
+
+
+
+
         }
     }
 }

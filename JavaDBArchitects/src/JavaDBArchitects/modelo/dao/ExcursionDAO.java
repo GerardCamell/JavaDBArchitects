@@ -12,23 +12,6 @@ import java.util.List;
 
 public class ExcursionDAO {
 
-    // Método para agregar una nueva excursión
-    public void addExcursion(Excursion excursion) {
-        String query = "INSERT INTO Excursiones (idExcursion, descripcion, fecha, num_dias, precio) VALUES (?, ?, ?, ?, ?)";
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-
-            preparedStatement.setString(1, excursion.getIdExcursion());
-            preparedStatement.setString(2, excursion.getDescripcion());
-            preparedStatement.setDate(3, new java.sql.Date(excursion.getFecha().getTime()));
-            preparedStatement.setInt(4, excursion.getNumDias());
-            preparedStatement.setFloat(5, excursion.getPrecioInscripcion());
-
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
 
     //Metodo para regitsrar excursion mediante procedimiento almacenado (Transacción)
 
@@ -80,6 +63,107 @@ public class ExcursionDAO {
         }
     }
 
+
+//Metodo para eliminar excursion mediante procedimiento almacenado (Transacción)
+
+    public static boolean eliminarExcursionPA(String idExcursion) {
+        Connection conn = null;
+        CallableStatement stmt = null;
+        boolean eliminado = false;
+
+        try {
+            conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/producto3", "root", "Againdifficult23!");
+            conn.setAutoCommit(false);  // Iniciar transacción
+
+            String sql = "{CALL eliminarExcursion(?)}";
+            stmt = conn.prepareCall(sql);
+
+            // Configurar el parámetro de entrada del procedimiento
+            stmt.setString(1, idExcursion);
+
+            // Ejecutar el procedimiento
+            int rowsAffected = stmt.executeUpdate();
+
+            // Confirmar la transacción si se afectaron filas
+            if (rowsAffected > 0) {
+                conn.commit();
+                eliminado = true;
+                System.out.println("Excursión eliminada correctamente.");
+            } else {
+                System.out.println("No se encontró ninguna excursión con el ID proporcionado.");
+                conn.rollback();
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error al eliminar excursión: " + e.getMessage());
+            try {
+                if (conn != null) conn.rollback();  // Deshacer cambios en caso de error
+            } catch (SQLException rollbackEx) {
+                System.err.println("Error al hacer rollback: " + rollbackEx.getMessage());
+            }
+
+        } finally {
+            try {
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                System.err.println("Error al cerrar recursos: " + e.getMessage());
+            }
+        }
+
+        return eliminado;
+    }
+
+
+    //Metodo para listar excursiones por fecha mediante procedimiento almacenado
+
+    public static void listarExcursionesPorFechaPA(String fechaInicio, String fechaFin) {
+        Connection conn = null;
+        CallableStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/producto3", "root", "Againdifficult23!");
+
+            String sql = "{CALL listarExcursionesPorFechas(?, ?)}";
+            stmt = conn.prepareCall(sql);
+
+            // Configurar los parámetros de entrada del procedimiento
+            stmt.setString(1, fechaInicio);
+            stmt.setString(2, fechaFin);
+
+            // Ejecutar el procedimiento y obtener el resultado
+            rs = stmt.executeQuery();
+
+            // Procesar el resultado
+            while (rs.next()) {
+                String idExcursion = rs.getString("idExcursion");
+                String descripcion = rs.getString("descripcion");
+                String fecha = rs.getDate("fecha").toString();
+                int numDias = rs.getInt("num_dias");
+                double precio = rs.getDouble("precio");
+
+                System.out.println("ID Excursión: " + idExcursion);
+                System.out.println("Descripción: " + descripcion);
+                System.out.println("Fecha: " + fecha);
+                System.out.println("Número de Días: " + numDias);
+                System.out.println("Precio: $" + precio);
+                System.out.println("------------------------------------");
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error al listar excursiones: " + e.getMessage());
+        } finally {
+            // Cerrar los recursos
+            try {
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                System.err.println("Error al cerrar recursos: " + e.getMessage());
+            }
+        }
+    }
 
 
 
@@ -168,55 +252,6 @@ public class ExcursionDAO {
         }
     }
 
-    //Metodo para eliminar excursion mediante procedimiento almacenado (Transacción)
-
-    public static boolean eliminarExcursionPA(String idExcursion) {
-        Connection conn = null;
-        CallableStatement stmt = null;
-        boolean eliminado = false;
-
-        try {
-            conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/producto3", "root", "Againdifficult23!");
-            conn.setAutoCommit(false);  // Iniciar transacción
-
-            String sql = "{CALL eliminarExcursion(?)}";
-            stmt = conn.prepareCall(sql);
-
-            // Configurar el parámetro de entrada del procedimiento
-            stmt.setString(1, idExcursion);
-
-            // Ejecutar el procedimiento
-            int rowsAffected = stmt.executeUpdate();
-
-            // Confirmar la transacción si se afectaron filas
-            if (rowsAffected > 0) {
-                conn.commit();
-                eliminado = true;
-                System.out.println("Excursión eliminada correctamente.");
-            } else {
-                System.out.println("No se encontró ninguna excursión con el ID proporcionado.");
-                conn.rollback();
-            }
-
-        } catch (SQLException e) {
-            System.err.println("Error al eliminar excursión: " + e.getMessage());
-            try {
-                if (conn != null) conn.rollback();  // Deshacer cambios en caso de error
-            } catch (SQLException rollbackEx) {
-                System.err.println("Error al hacer rollback: " + rollbackEx.getMessage());
-            }
-
-        } finally {
-            try {
-                if (stmt != null) stmt.close();
-                if (conn != null) conn.close();
-            } catch (SQLException e) {
-                System.err.println("Error al cerrar recursos: " + e.getMessage());
-            }
-        }
-
-        return eliminado;
-    }
 
     // Método en ExcursionDAO para obtener excursiones entre dos fechas
     public List<Excursion> getExcursionesEntreFechas(LocalDate fechaInicio, LocalDate fechaFin) {
@@ -247,56 +282,6 @@ public class ExcursionDAO {
     }
 
 
-    //Metodo para listar excursiones por fecha mediante procedimiento almacenado
-
-    public static void listarExcursionesPorFechaPA(String fechaInicio, String fechaFin) {
-        Connection conn = null;
-        CallableStatement stmt = null;
-        ResultSet rs = null;
-
-        try {
-            conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/producto3", "root", "Againdifficult23!");
-
-            String sql = "{CALL listarExcursionesPorFechas(?, ?)}";
-            stmt = conn.prepareCall(sql);
-
-            // Configurar los parámetros de entrada del procedimiento
-            stmt.setString(1, fechaInicio);
-            stmt.setString(2, fechaFin);
-
-            // Ejecutar el procedimiento y obtener el resultado
-            rs = stmt.executeQuery();
-
-            // Procesar el resultado
-            while (rs.next()) {
-                String idExcursion = rs.getString("idExcursion");
-                String descripcion = rs.getString("descripcion");
-                String fecha = rs.getDate("fecha").toString();
-                int numDias = rs.getInt("num_dias");
-                double precio = rs.getDouble("precio");
-
-                System.out.println("ID Excursión: " + idExcursion);
-                System.out.println("Descripción: " + descripcion);
-                System.out.println("Fecha: " + fecha);
-                System.out.println("Número de Días: " + numDias);
-                System.out.println("Precio: $" + precio);
-                System.out.println("------------------------------------");
-            }
-
-        } catch (SQLException e) {
-            System.err.println("Error al listar excursiones: " + e.getMessage());
-        } finally {
-            // Cerrar los recursos
-            try {
-                if (rs != null) rs.close();
-                if (stmt != null) stmt.close();
-                if (conn != null) conn.close();
-            } catch (SQLException e) {
-                System.err.println("Error al cerrar recursos: " + e.getMessage());
-            }
-        }
-    }
-
 
 
     public List<Excursion> getAllExcursiones() {
@@ -320,6 +305,27 @@ public class ExcursionDAO {
             e.printStackTrace();
         }
         return excursiones;
+    }
+
+    //----METODOS SIN PROCEDIMIENTOS ALMACENADOS NO USADOS ACTUALMENTE
+
+
+    // Método para agregar una nueva excursión sin procedimiento almacenado (NO SE USA)
+    public void addExcursion(Excursion excursion) {
+        String query = "INSERT INTO Excursiones (idExcursion, descripcion, fecha, num_dias, precio) VALUES (?, ?, ?, ?, ?)";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            preparedStatement.setString(1, excursion.getIdExcursion());
+            preparedStatement.setString(2, excursion.getDescripcion());
+            preparedStatement.setDate(3, new java.sql.Date(excursion.getFecha().getTime()));
+            preparedStatement.setInt(4, excursion.getNumDias());
+            preparedStatement.setFloat(5, excursion.getPrecioInscripcion());
+
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     // Método para eliminar todas las excursiones

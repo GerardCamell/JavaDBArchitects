@@ -10,81 +10,14 @@ import java.util.List;
 
 public class SocioDAO {
 
-    // Método para agregar un nuevo socio
-    /*public void addSocio(Socio socio) throws SocioYaExisteException {
-        try (Connection connection = DatabaseConnection.getConnection()) {
-            connection.setAutoCommit(false);  // Iniciar transacción
 
-            // Verificar si el socio ya existe
-            if (socioExiste(socio.getNumeroSocio())) {
-                throw new SocioYaExisteException("El socio con número " + socio.getNumeroSocio() + " ya existe.");
-            }
-
-            Integer numSocioPadre = null;
-
-            // Verificar tipo de socio y realizar operaciones específicas
-            if (socio instanceof Estandar) {
-                TipoSeguro tipoSeguro = ((Estandar) socio).getTipoSeguro();
-                if (tipoSeguro == null) {
-                    throw new IllegalArgumentException("Error: El socio estándar debe tener un tipo de seguro definido como BASICO o COMPLETO.");
-                }
-            } else if (socio instanceof Federado) {
-                Federacion federacion = ((Federado) socio).getFederacion();
-                Integer idFederacion = federacion.getId_federacion();
-                String nombreFederacion = federacion.getNombre();
-
-                if (!federacionExiste(idFederacion, connection)) {
-                    insertarFederacionConId(idFederacion, nombreFederacion, connection);
-                }
-                socio.setIdFederacion(idFederacion);
-            } else if (socio instanceof Infantil) {
-                numSocioPadre = socio.getIdSocioPadre();
-                if (numSocioPadre != null && !socioExiste(numSocioPadre)) {
-                    throw new IllegalArgumentException("Error: El socio padre o madre con ID " + numSocioPadre + " no existe.");
-                }
-            }
-
-            // Proceder con la inserción del socio, incluyendo cuota_mensual
-            String query = "INSERT INTO Socios (numeroSocio, nombre, tipo_socio, nif, tipo_seguro, id_federacion, id_socio_padre, cuota_mensual) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-                preparedStatement.setInt(1, socio.getNumeroSocio());
-                preparedStatement.setString(2, socio.getNombre());
-                preparedStatement.setString(3, socio.getTipoSocio());
-                preparedStatement.setString(4, socio.getNif());
-
-                if (socio instanceof Estandar) {
-                    preparedStatement.setString(5, ((Estandar) socio).getTipoSeguro().name());
-                } else {
-                    preparedStatement.setNull(5, Types.VARCHAR);
-                }
-
-                if (socio instanceof Federado) {
-                    preparedStatement.setObject(6, socio.getIdFederacion(), Types.INTEGER);
-                } else {
-                    preparedStatement.setNull(6, Types.INTEGER);
-                }
-
-                preparedStatement.setObject(7, numSocioPadre, Types.INTEGER);
-                preparedStatement.setBigDecimal(8, socio.getCuotaMensual());
-
-                preparedStatement.executeUpdate();
-                connection.commit();
-                System.out.println("Socio insertado correctamente.");
-            } catch (SQLException e) {
-                connection.rollback();
-                e.printStackTrace();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }*/
 
     // Método registrarSocio mediante procedimiento almacenado
-    public static void registrarSocioPA(String nombre, int tipoSocio, String nif, int idFederacion, Integer idSocioPadre, Object extra) {
+    public static void registrarSocioPA(String nombre, int tipoSocio, String nif, int idFederacion, Integer idSocioPadre, Object extra, String nombreFederacion) {
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/producto3", "root", "Againdifficult23!")) {
             conn.setAutoCommit(false);
 
-            String sql = "{CALL registrarSocio(?, ?, ?, ?, ?, ?)}";
+            String sql = "{CALL registrarSocio(?, ?, ?, ?, ?, ?, ?)}";
             try (CallableStatement stmt = conn.prepareCall(sql)) {
                 stmt.setString(1, nombre);
                 stmt.setString(2, obtenerTipoSocio(tipoSocio));
@@ -92,6 +25,7 @@ public class SocioDAO {
                 stmt.setInt(4, idFederacion);
                 stmt.setObject(5, idSocioPadre);
                 stmt.setString(6, obtenerTipoSeguro(extra));
+                stmt.setString(7, nombreFederacion);  // Agregar el nombre de la federación
 
                 stmt.executeUpdate();
                 conn.commit();
@@ -114,6 +48,7 @@ public class SocioDAO {
             System.err.println("Error de conexión: " + e.getMessage());
         }
     }
+
 
     public List<Socio> listarSociosPorTipoPA(int tipoSocio) {
         List<Socio> socios = new ArrayList<>();
@@ -168,7 +103,7 @@ public class SocioDAO {
         }
     }
 
-
+//-----RESTO DE MÉTODOS
 
     private static String obtenerTipoSocio(int tipoSocio) {
         switch (tipoSocio) {
@@ -288,6 +223,76 @@ public class SocioDAO {
             e.printStackTrace();
         }
         return false;
+    }
+
+//-----MÉTODOS ANTERIORES SIN PROCEDIMIENTOS ALMACENADOS QUE YA NO SE USAN
+    // Método para agregar un nuevo socio
+    public void addSocio(Socio socio) throws SocioYaExisteException {
+        try (Connection connection = DatabaseConnection.getConnection()) {
+            connection.setAutoCommit(false);  // Iniciar transacción
+
+            // Verificar si el socio ya existe
+            if (socioExiste(socio.getNumeroSocio())) {
+                throw new SocioYaExisteException("El socio con número " + socio.getNumeroSocio() + " ya existe.");
+            }
+
+            Integer numSocioPadre = null;
+
+            // Verificar tipo de socio y realizar operaciones específicas
+            if (socio instanceof Estandar) {
+                TipoSeguro tipoSeguro = ((Estandar) socio).getTipoSeguro();
+                if (tipoSeguro == null) {
+                    throw new IllegalArgumentException("Error: El socio estándar debe tener un tipo de seguro definido como BASICO o COMPLETO.");
+                }
+            } else if (socio instanceof Federado) {
+                Federacion federacion = ((Federado) socio).getFederacion();
+                Integer idFederacion = federacion.getId_federacion();
+                String nombreFederacion = federacion.getNombre();
+
+                if (!federacionExiste(idFederacion, connection)) {
+                    insertarFederacionConId(idFederacion, nombreFederacion, connection);
+                }
+                socio.setIdFederacion(idFederacion);
+            } else if (socio instanceof Infantil) {
+                numSocioPadre = socio.getIdSocioPadre();
+                if (numSocioPadre != null && !socioExiste(numSocioPadre)) {
+                    throw new IllegalArgumentException("Error: El socio padre o madre con ID " + numSocioPadre + " no existe.");
+                }
+            }
+
+            // Proceder con la inserción del socio, incluyendo cuota_mensual
+            String query = "INSERT INTO Socios (numeroSocio, nombre, tipo_socio, nif, tipo_seguro, id_federacion, id_socio_padre, cuota_mensual) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setInt(1, socio.getNumeroSocio());
+                preparedStatement.setString(2, socio.getNombre());
+                preparedStatement.setString(3, socio.getTipoSocio());
+                preparedStatement.setString(4, socio.getNif());
+
+                if (socio instanceof Estandar) {
+                    preparedStatement.setString(5, ((Estandar) socio).getTipoSeguro().name());
+                } else {
+                    preparedStatement.setNull(5, Types.VARCHAR);
+                }
+
+                if (socio instanceof Federado) {
+                    preparedStatement.setObject(6, socio.getIdFederacion(), Types.INTEGER);
+                } else {
+                    preparedStatement.setNull(6, Types.INTEGER);
+                }
+
+                preparedStatement.setObject(7, numSocioPadre, Types.INTEGER);
+                preparedStatement.setBigDecimal(8, socio.getCuotaMensual());
+
+                preparedStatement.executeUpdate();
+                connection.commit();
+                System.out.println("Socio insertado correctamente.");
+            } catch (SQLException e) {
+                connection.rollback();
+                e.printStackTrace();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
 

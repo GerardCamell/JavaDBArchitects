@@ -31,12 +31,14 @@ public class Datos {
         Object extra = null;
         int idFederacion = 0;  // Inicializamos en 0 para los federados
         Integer idSocioPadre = null;  // Inicializamos en null para los infantiles
+        String nombreFederacion = null; // Nombre de la federación para los federados
 
         if (tipoSocio == 0) {
             extra = (Seguro) parametros.get(4);
         } else if (tipoSocio == 1) {
             Federacion federacion = (Federacion) parametros.get(4);
             idFederacion = federacion.getId_federacion();
+            nombreFederacion = federacion.getNombre(); // Asignamos el nombre de la federación
             extra = federacion;
         } else if (tipoSocio == 2) {
             idSocioPadre = (Integer) parametros.get(4);
@@ -48,7 +50,8 @@ public class Datos {
             throw new SocioYaExisteException("El socio con número " + parametros.get(1) + " ya existe.");
         }
 
-        socioDAO.registrarSocioPA(nombre, tipoSocio, NIF, idFederacion, idSocioPadre, extra);
+        // Llamada a registrarSocioPA con el séptimo parámetro
+        socioDAO.registrarSocioPA(nombre, tipoSocio, NIF, idFederacion, idSocioPadre, extra, nombreFederacion);
         return true;
     }
 
@@ -77,7 +80,7 @@ public class Datos {
     // Métodos de gestión de Excursiones
     // ------------------------------
 
-    public static boolean registrarExcursion(List<Object> parametros) throws ExcursionYaExisteException {
+    public static boolean registrarExcursionPA(List<Object> parametros) throws ExcursionYaExisteException {
         String idExcursion = parametros.get(0).toString();
         String descripcion = parametros.get(1).toString();
         java.sql.Date sqlDate = (java.sql.Date) parametros.get(2);
@@ -89,12 +92,13 @@ public class Datos {
             throw new ExcursionYaExisteException("La excursión ya existe.");
         }
 
-        Excursion excursion = new Excursion(idExcursion, descripcion, Date.valueOf(fecha), numeroDias, precio);
-        excursionDAO.addExcursion(excursion);
+        // Llamada directa a registrarExcursionPA con los parámetros desglosados
+        excursionDAO.registrarExcursionPA(idExcursion, descripcion, fecha, numeroDias, precio);
         return true;
     }
 
-    public static boolean eliminarExcursion(String idExcursion) throws ExcursionNoExisteException, EliminarExcursionConInscripcionesException {
+
+    public static boolean eliminarExcursionPA(String idExcursion) throws ExcursionNoExisteException, EliminarExcursionConInscripcionesException {
         Excursion excursion = excursionDAO.getExcursionById(idExcursion);
 
         if (excursion == null) {
@@ -105,11 +109,11 @@ public class Datos {
             throw new EliminarExcursionConInscripcionesException("La excursión tiene inscripciones activas.");
         }
 
-        excursionDAO.deleteExcursion(idExcursion);
+        excursionDAO.eliminarExcursionPA(idExcursion);
         return true;
     }
 
-    public static List<Excursion> obtenerExcursionesEntreFechas(LocalDate fechaInicio, LocalDate fechaFin) {
+    public static List<Excursion> listarExcursionesPorFechaPA(LocalDate fechaInicio, LocalDate fechaFin) {
         List<Excursion> excursionesEnRango = new ArrayList<>();
 
         for (Excursion excursion : excursionDAO.getAllExcursiones()) {
@@ -150,20 +154,15 @@ public class Datos {
         }
 
         // Verificar si la inscripción ya existe
-        if (inscripcionDAO.inscripcionExiste(socio.getNumeroSocio(), excursion.getIdExcursion())) { // Cambiado a int
+        if (inscripcionDAO.inscripcionExiste(socio.getNumeroSocio(), excursion.getIdExcursion())) {
             throw new InscripcionYaExisteException("El socio ya está inscrito.");
         }
 
-        Inscripcion inscripcion = new Inscripcion(
-                String.valueOf(inscripcionDAO.generarNumeroInscripcion()),
-                socio,
-                excursion,
-                java.sql.Date.valueOf(fechaInscripcion)
-        );
-
-        inscripcionDAO.addInscripcion(inscripcion);
+        // Llamada al método de procedimiento almacenado
+        inscripcionDAO.inscribirEnExcursionPA(socio.getNumeroSocio(), excursion.getIdExcursion(), fechaInscripcion);
         return true;
     }
+
 
     public static boolean eliminarInscripcion(String numeroInscripcion) throws InscripcionNoExisteException, CancelacionInvalidaException {
         Inscripcion inscripcion = inscripcionDAO.getInscripcionById(numeroInscripcion);
@@ -179,7 +178,13 @@ public class Datos {
             throw new CancelacionInvalidaException("No se puede eliminar una inscripción de una excursión ya realizada.");
         }
 
-        inscripcionDAO.eliminarInscripcionPA(Integer.parseInt(numeroInscripcion));  // Cambiado a eliminarInscripcionPA y convertido a int
-        return true;
+        boolean eliminado = inscripcionDAO.eliminarInscripcionPA(Integer.parseInt(numeroInscripcion));
+        if (eliminado) {
+            System.out.println("Inscripción eliminada correctamente.");
+        } else {
+            System.out.println("No se encontró ninguna inscripción con el ID proporcionado.");
+        }
+        return eliminado;
     }
 }
+
